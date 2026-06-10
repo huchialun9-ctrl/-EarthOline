@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
   rebirthBonus: { type: Number, default: 1.0 },
   agreedAt: { type: Date, default: null },
   lastActive: { type: Date, default: Date.now },
+  totalGoldMined: { type: Number, default: 0 },
+  totalGachaOpens: { type: Number, default: 0 },
+  totalSalvages: { type: Number, default: 0 },
+  maxMineLevel: { type: Number, default: 1 },
 }, { timestamps: true });
 
 const countrySchema = new mongoose.Schema({

@@ -190,6 +190,14 @@
           <span class="pixel-icon icon-chart"></span>
           <span class="sidebar-label">統計</span>
         </button>
+        <button class="sidebar-btn" data-page="goals" onclick="switchGamePage('goals')">
+          <span class="pixel-icon icon-target"></span>
+          <span class="sidebar-label">目標</span>
+        </button>
+        <button class="sidebar-btn" data-page="clan" onclick="switchGamePage('clan')">
+          <span class="pixel-icon icon-shield"></span>
+          <span class="sidebar-label">公會</span>
+        </button>
       </nav>
       <div class="sidebar-user">
         <div class="user-badge-sm" onclick="toggleUserMenu()">
@@ -354,6 +362,33 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- PAGE: Goals (Daily Quests + Achievements) -->
+      <div class="game-page" id="gpage-goals">
+        <div class="page-center" style="justify-content:flex-start;padding-top:24px;">
+          <div class="goals-card">
+            <div class="goals-tabs">
+              <button class="goal-tab active" data-goaltab="daily" onclick="switchGoalTab('daily')">每日任務</button>
+              <button class="goal-tab" data-goaltab="achievements" onclick="switchGoalTab('achievements')">成就</button>
+            </div>
+            <div id="goals-daily" class="goal-tab-content active">
+              <div class="quest-streak" id="quest-streak"></div>
+              <div id="quest-list" class="quest-list"></div>
+              <button class="pixel-btn btn-primary btn-full" onclick="claimAllQuests()" id="btn-claim-all" style="margin-top:12px;">一鍵領取</button>
+            </div>
+            <div id="goals-achievements" class="goal-tab-content">
+              <div id="achievement-list" class="achievement-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: Clan -->
+      <div class="game-page" id="gpage-clan">
+        <div class="page-center" style="justify-content:flex-start;padding-top:24px;">
+          <div id="clan-view" class="clan-card"></div>
         </div>
       </div>
     </main>

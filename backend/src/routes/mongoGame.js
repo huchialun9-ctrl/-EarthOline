@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { User, Country, Artifact, UserArtifact } = require('../models/mongoose');
+const { trackDailyProgress, checkAchievements } = require('../services/progressTracker');
 
 function requireAuth(req, res, next) {
   if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
@@ -61,6 +62,10 @@ router.post('/game/mine/upgrade', requireAuth, async (req, res) => {
     if (user.gold < cost) return res.status(400).json({ error: 'Insufficient gold', cost, gold: user.gold });
 
     user.mineLevel += 1;
+    if (user.mineLevel > (user.maxMineLevel || 0)) {
+      user.maxMineLevel = user.mineLevel;
+      await checkAchievements(user._id, 'maxMineLevel', user.maxMineLevel);
+    }
     user.gold -= cost;
     if (user.currentCountry) {
       const country = await Country.findOne({ code: user.currentCountry });
@@ -83,7 +88,12 @@ router.post('/game/mine/claim', requireAuth, async (req, res) => {
     const lastActive = user.lastActive ? new Date(user.lastActive).getTime() : now;
     const elapsed = Math.min((now - lastActive) / 1000, 3600);
     const earned = elapsed * (user.goldPerSec || 0);
-    if (earned > 0) user.gold += earned;
+    if (earned > 0) {
+      user.gold += earned;
+      user.totalGoldMined = (user.totalGoldMined || 0) + earned;
+      await trackDailyProgress(user._id, 'mine_gold', earned);
+      await checkAchievements(user._id, 'totalGoldMined', user.totalGoldMined);
+    }
     user.lastActive = new Date();
     await user.save();
     res.json({ success: true, earned, user: user.toObject() });
@@ -120,10 +130,13 @@ router.post('/game/gacha/draw', requireAuth, async (req, res) => {
     if (!updated) return res.status(400).json({ error: 'Sold out' });
 
     user.gold -= cost;
+    user.totalGachaOpens = (user.totalGachaOpens || 0) + 1;
     updated.remainingQuantity -= 1;
     await updated.save();
 
     const ua = await UserArtifact.create({ userId: user._id, artifactId: artifact._id });
+    await trackDailyProgress(user._id, 'open_gacha', 1);
+    await checkAchievements(user._id, 'totalGachaOpens', user.totalGachaOpens);
 
     if (artifact.effectType === 'speed' && artifact.rarity !== 'common') {
       user.goldPerSec = (user.goldPerSec || 0) * (1 + artifact.effectValue / 100.0);
@@ -186,6 +199,9 @@ router.post('/game/salvage', requireAuth, async (req, res) => {
     await UserArtifact.findByIdAndDelete(itemId);
     const user = await User.findById(req.user._id);
     user.rebirthBonus = (user.rebirthBonus || 1.0) + 0.01;
+    user.totalSalvages = (user.totalSalvages || 0) + 1;
+    await trackDailyProgress(user._id, 'salvage_item', 1);
+    await checkAchievements(user._id, 'totalSalvages', user.totalSalvages);
     await user.save();
     res.json({ success: true, user: user.toObject(), crystals: 1 });
   } catch (e) {
@@ -201,6 +217,7 @@ router.post('/game/rebirth', requireAuth, async (req, res) => {
     user.gold = 0;
     user.totalRebirths = (user.totalRebirths || 0) + 1;
     user.goldPerSec = 0;
+    await checkAchievements(user._id, 'totalRebirths', user.totalRebirths);
     await user.save();
     res.json({ success: true, user: user.toObject() });
   } catch (e) {

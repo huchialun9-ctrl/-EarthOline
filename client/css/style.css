@@ -951,6 +951,249 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
 
 /* RESPONSIVE */
+/* ===== GOALS PAGE ===== */
+.goals-card {
+  width: 100%;
+  max-width: 560px;
+}
+.goals-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.goal-tab {
+  flex: 1;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.goal-tab:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.goal-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  background: rgba(255,204,0,0.05);
+}
+.goal-tab-content { display: none; padding: 16px 0; }
+.goal-tab-content.active { display: block; }
+
+.quest-streak {
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  padding: 8px;
+  background: rgba(255,204,0,0.06);
+  border: 1px solid var(--gold-dark);
+}
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.quest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 14px;
+  transition: all 0.12s;
+}
+.quest-item.completed { border-color: var(--green); background: rgba(68,204,68,0.04); }
+.quest-item.claimed { opacity: 0.5; }
+.quest-icon { font-size: 20px; width: 28px; text-align: center; }
+.quest-info { flex: 1; min-width: 0; }
+.quest-name { font-size: 13px; font-weight: 700; }
+.quest-reward { font-size: 11px; color: var(--gold); margin-top: 2px; }
+.quest-progress { margin-top: 6px; }
+.quest-progress-bar {
+  width: 100%; height: 4px;
+  background: #0d0d16;
+  border: 1px solid var(--border);
+}
+.quest-progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--green), #66ff66);
+  transition: width 0.3s;
+}
+.quest-progress-text { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.quest-btn {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 700;
+  border: 1px solid var(--green);
+  background: rgba(68,204,68,0.1);
+  color: var(--green);
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 2px;
+  transition: all 0.12s;
+}
+.quest-btn:hover { background: rgba(68,204,68,0.2); }
+.quest-btn.claimed { border-color: var(--border); background: transparent; color: var(--text-dim); cursor: default; }
+.quest-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ACHIEVEMENTS */
+.achievement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 14px;
+  transition: all 0.12s;
+}
+.achievement-item.completed { border-color: var(--gold); background: rgba(255,204,0,0.04); }
+.achievement-item.claimed { opacity: 0.5; }
+.ach-icon { font-size: 20px; width: 28px; text-align: center; }
+.ach-info { flex: 1; }
+.ach-name { font-size: 13px; font-weight: 700; }
+.ach-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.ach-reward { font-size: 11px; color: var(--gold); margin-top: 2px; }
+.ach-btn {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 700;
+  border: 1px solid var(--gold);
+  background: rgba(255,204,0,0.1);
+  color: var(--gold);
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 2px;
+  transition: all 0.12s;
+}
+.ach-btn:hover { background: rgba(255,204,0,0.2); }
+.ach-btn.claimed { border-color: var(--border); background: transparent; color: var(--text-dim); cursor: default; }
+.ach-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ===== CLAN PAGE ===== */
+.clan-card {
+  width: 100%;
+  max-width: 560px;
+}
+.clan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.clan-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: var(--gold);
+}
+.clan-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+}
+.clan-level {
+  font-size: 12px;
+  color: var(--green);
+  margin-top: 4px;
+}
+.clan-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 8px 0 16px;
+  line-height: 1.6;
+}
+.clan-members-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.clan-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+.clan-member-role {
+  font-size: 9px;
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+}
+.clan-member-name { flex: 1; font-weight: 700; }
+.clan-member-info { font-size: 10px; color: var(--text-dim); }
+
+.clan-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.clan-list-item:hover { border-color: var(--cyan); }
+.clan-list-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--gold);
+  background: rgba(255,204,0,0.08);
+  border: 1px solid var(--gold-dark);
+  padding: 4px 8px;
+}
+.clan-list-info { flex: 1; }
+.clan-list-name { font-size: 13px; font-weight: 700; }
+.clan-list-meta { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+.clan-requests-section {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(255,204,0,0.04);
+  border: 1px solid var(--gold-dark);
+}
+.clan-requests-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.clan-request {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 12px;
+}
+.clan-request-actions { display: flex; gap: 6px; margin-left: auto; }
+
+.clan-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.clan-input-group .pixel-input { flex: 1; }
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .login-card { width: 95%; }
   .faction-row { flex-direction: column; align-items: center; }

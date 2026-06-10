@@ -117,6 +117,8 @@ function switchGamePage(page) {
   if (page === 'stats') loadStats();
   if (page === 'inventory') loadInventory();
   if (page === 'mine') initMineCanvasAnimation();
+  if (page === 'goals') { loadQuests(); loadAchievements(); }
+  if (page === 'clan') loadClanView();
 }
 
 function switchLoginTab(tab) {
@@ -751,6 +753,394 @@ function initMineCanvasAnimation() {
 
   if (animationFrame) cancelAnimationFrame(animationFrame);
   animate();
+}
+
+/* ===== GOALS: DAILY QUESTS + ACHIEVEMENTS ===== */
+function switchGoalTab(tab) {
+  document.querySelectorAll('.goal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.goal-tab[data-goaltab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.goal-tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`goals-${tab}`).classList.add('active');
+  if (tab === 'daily') loadQuests();
+  if (tab === 'achievements') loadAchievements();
+}
+
+function loadQuests() {
+  fetch('/api/game/quests/daily')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) renderQuests(data.quests);
+    })
+    .catch(() => {});
+}
+
+function renderQuests(dq) {
+  const container = document.getElementById('quest-list');
+  const streakEl = document.getElementById('quest-streak');
+  if (!container) return;
+
+  const qNames = { login: '每日登入', mine_gold: '開採金幣', open_gacha: '開啟秘寶', salvage_item: '熔煉物品' };
+  const qIcons = { login: 'icon-enter', mine_gold: 'icon-pickaxe', open_gacha: 'icon-chest', salvage_item: 'icon-recycle' };
+
+  streakEl.textContent = `連續簽到 ${dq.streak} 天` + (dq.streak > 0 ? ` (獎勵 x${(1 + dq.streak * 0.1).toFixed(1)})` : '');
+
+  container.innerHTML = dq.quests.map((q, i) => {
+    const pct = Math.min((q.progress / q.target) * 100, 100);
+    let btnHtml = '';
+    if (q.claimed) {
+      btnHtml = `<button class="quest-btn claimed" disabled>已領取</button>`;
+    } else if (q.completed) {
+      btnHtml = `<button class="quest-btn" onclick="claimQuest(${i})">領取</button>`;
+    } else {
+      btnHtml = `<button class="quest-btn" disabled style="opacity:0.35;">進行中</button>`;
+    }
+    return `
+      <div class="quest-item ${q.completed ? 'completed' : ''} ${q.claimed ? 'claimed' : ''}">
+        <div class="quest-icon"><span class="pixel-icon ${qIcons[q.type] || 'icon-star'}"></span></div>
+        <div class="quest-info">
+          <div class="quest-name">${qNames[q.type] || q.type}</div>
+          <div class="quest-reward">獎勵: ${formatGold(q.rewardGold)} <span class="pixel-icon icon-coin"></span></div>
+          <div class="quest-progress">
+            <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:${pct}%"></div></div>
+            <div class="quest-progress-text">${Math.floor(q.progress)} / ${q.target}</div>
+          </div>
+        </div>
+        ${btnHtml}
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('btn-claim-all').style.display =
+    dq.quests.some(q => q.completed && !q.claimed) ? 'block' : 'none';
+}
+
+function claimQuest(index) {
+  fetch('/api/game/quests/daily/claim', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ questIndex: index })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        gameState.gold = data.user.gold;
+        gameState.user = data.user;
+        updateMiningUI();
+        renderQuests(data.quests);
+      }
+    })
+    .catch(() => {});
+}
+
+function claimAllQuests() {
+  fetch('/api/game/quests/daily/claim-all', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        gameState.gold = data.user.gold;
+        gameState.user = data.user;
+        updateMiningUI();
+        renderQuests(data.quests);
+      }
+    })
+    .catch(() => {});
+}
+
+function loadAchievements() {
+  fetch('/api/game/achievements')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) renderAchievements(data.achievements);
+    })
+    .catch(() => {});
+}
+
+function renderAchievements(achievements) {
+  const container = document.getElementById('achievement-list');
+  if (!container) return;
+  container.innerHTML = achievements.map(a => {
+    const pct = a.completed ? 100 : Math.min((a.progress / a.target) * 100, 100);
+    let btnHtml = '';
+    if (a.claimed) {
+      btnHtml = `<button class="ach-btn claimed" disabled>已領取</button>`;
+    } else if (a.completed) {
+      btnHtml = `<button class="ach-btn" onclick="claimAchievement('${a.key}')">領取</button>`;
+    } else {
+      btnHtml = `<button class="ach-btn" disabled style="opacity:0.35;">${Math.floor(pct)}%</button>`;
+    }
+    return `
+      <div class="achievement-item ${a.completed ? 'completed' : ''} ${a.claimed ? 'claimed' : ''}">
+        <div class="ach-icon"><span class="pixel-icon icon-star"></span></div>
+        <div class="ach-info">
+          <div class="ach-name">${a.nameCn}</div>
+          <div class="ach-desc">${a.desc}</div>
+          <div class="ach-reward">獎勵: ${formatGold(a.rewardGold)} <span class="pixel-icon icon-coin"></span></div>
+          <div class="quest-progress">
+            <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:${pct}%"></div></div>
+            <div class="quest-progress-text">${a.completed ? '已完成' : Math.floor(a.progress).toLocaleString() + ' / ' + a.target.toLocaleString()}</div>
+          </div>
+        </div>
+        ${btnHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+function claimAchievement(key) {
+  fetch('/api/game/achievements/claim', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ key })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        gameState.gold = data.user.gold;
+        gameState.user = data.user;
+        updateMiningUI();
+        loadAchievements();
+      }
+    })
+    .catch(() => {});
+}
+
+/* ===== CLAN ===== */
+function loadClanView() {
+  fetch('/api/game/clan/my')
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        if (data.clan) renderClanDetail(data.clan);
+        else showClanList();
+      }
+    })
+    .catch(() => {});
+}
+
+function renderClanDetail(clan) {
+  const container = document.getElementById('clan-view');
+  if (!container) return;
+  const isLeader = clan.leader?._id === gameState.user?._id || clan.leader === gameState.user?._id;
+  const myMember = clan.members.find(m => m.userId?._id === gameState.user?._id || m.userId === gameState.user?._id);
+  const isOfficer = myMember?.role === 'officer' || isLeader;
+
+  const roleLabels = { leader: '會長', officer: '幹部', member: '會員' };
+
+  let html = `
+    <div class="clan-header">
+      <div>
+        <div class="clan-name">${clan.name}</div>
+        <div class="clan-level">Lv.${clan.level}</div>
+      </div>
+      <div class="clan-tag">${clan.tag}</div>
+    </div>
+    ${clan.description ? `<div class="clan-desc">${clan.description}</div>` : ''}
+    <div class="clan-members-title">成員 (${clan.members.length})</div>
+  `;
+
+  clan.members.forEach(m => {
+    const u = m.user || {};
+    const uid = u._id || m.userId;
+    html += `
+      <div class="clan-member">
+        <span class="clan-member-role">${roleLabels[m.role] || m.role}</span>
+        <span class="clan-member-name">${u.username || '未知'}</span>
+        <span class="clan-member-info">Lv.${u.mineLevel || 1} · ${formatGold(u.gold || 0)}</span>
+        ${(isLeader && m.role !== 'leader') ? `<button class="pixel-btn btn-sm" onclick="kickClanMember('${uid}')" style="margin-left:auto;">踢出</button>` : ''}
+        ${(isLeader && m.role !== 'leader') ? `<button class="pixel-btn btn-sm" onclick="transferClanLeader('${uid}')">轉讓</button>` : ''}
+      </div>
+    `;
+  });
+
+  if (isLeader && clan.joinRequests?.length > 0) {
+    html += `<div class="clan-requests-section">
+      <div class="clan-requests-title">加入申請 (${clan.joinRequests.length})</div>`;
+    clan.joinRequests.forEach(r => {
+      const ruid = r.userId?._id || r.userId;
+      html += `<div class="clan-request">
+        <span>${r.userId?.username || '未知'}</span>
+        <div class="clan-request-actions">
+          <button class="pixel-btn btn-sm btn-primary" onclick="handleClanRequest('${clan._id}', '${ruid}', true)">同意</button>
+          <button class="pixel-btn btn-sm btn-danger" onclick="handleClanRequest('${clan._id}', '${ruid}', false)">拒絕</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (!isLeader) {
+    html += `<button class="pixel-btn btn-danger btn-full" onclick="leaveClan()" style="margin-top:16px;">退出公會</button>`;
+  }
+  if (isLeader) {
+    html += `<div style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
+      <div class="clan-members-title">公會設定</div>
+      <input type="text" id="clan-desc-input" class="pixel-input" placeholder="公會描述" value="${clan.description || ''}">
+      <button class="pixel-btn btn-primary btn-full" onclick="updateClanDesc()" style="margin-top:8px;">更新描述</button>
+    </div>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function showClanList() {
+  fetch('/api/game/clan/list')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) return;
+      const container = document.getElementById('clan-view');
+      if (!container) return;
+
+      let html = `
+        <div class="clan-header">
+          <div>
+            <div class="clan-name" style="font-size:14px;">公會列表</div>
+            <div class="clan-desc">加入公會獲得加成與夥伴！</div>
+          </div>
+        </div>
+      `;
+
+      if (data.clans.length === 0) {
+        html += `<div style="text-align:center;padding:24px;color:var(--text-dim);">尚未有任何公會，來創建第一個吧！</div>`;
+      } else {
+        html += `<div style="margin-bottom:12px;">`;
+        data.clans.forEach(c => {
+          html += `
+            <div class="clan-list-item" onclick="joinClan('${c._id}')">
+              <div class="clan-list-tag">${c.tag}</div>
+              <div class="clan-list-info">
+                <div class="clan-list-name">${c.name}</div>
+                <div class="clan-list-meta">Lv.${c.level} · ${c.memberCount} 人</div>
+              </div>
+              <button class="pixel-btn btn-sm btn-primary" onclick="event.stopPropagation();joinClan('${c._id}')">加入</button>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      html += `
+        <div style="margin-top:16px;padding:16px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
+          <div class="clan-members-title" style="margin-bottom:8px;">創建公會</div>
+          <div class="clan-input-group">
+            <input type="text" id="clan-name-input" class="pixel-input" placeholder="公會名稱">
+            <input type="text" id="clan-tag-input" class="pixel-input" placeholder="標籤 (2-4字)" style="max-width:120px;">
+          </div>
+          <button class="pixel-btn btn-primary btn-full" onclick="createClan()">創建公會</button>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    })
+    .catch(() => {});
+}
+
+function createClan() {
+  const name = document.getElementById('clan-name-input')?.value.trim();
+  const tag = document.getElementById('clan-tag-input')?.value.trim();
+  if (!name || !tag) { alert('請填寫公會名稱和標籤'); return; }
+  if (tag.length > 4) { alert('標籤最多 4 個字'); return; }
+  fetch('/api/game/clan/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, tag })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) loadClanView();
+      else alert(data.error || '創建失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
+}
+
+function joinClan(clanId) {
+  fetch('/api/game/clan/join', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ clanId })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) alert('已送出加入申請！請等待會長審核。');
+      else alert(data.error || '申請失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
+}
+
+function leaveClan() {
+  if (!confirm('確定退出公會？')) return;
+  fetch('/api/game/clan/leave', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) loadClanView();
+      else alert(data.error || '退出失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
+}
+
+function handleClanRequest(clanId, userId, accept) {
+  fetch('/api/game/clan/handle-request', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ clanId, userId, accept })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) loadClanView();
+      else alert(data.error || '操作失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
+}
+
+function kickClanMember(userId) {
+  if (!confirm('確定踢出該成員？')) return;
+  fetch('/api/game/clan/kick', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) loadClanView();
+      else alert(data.error || '操作失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
+}
+
+function transferClanLeader(userId) {
+  if (!confirm('確定將會長轉讓給該成員？此操作不可撤銷！')) return;
+  fetch('/api/game/clan/transfer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) loadClanView();
+      else alert(data.error || '操作失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
+}
+
+function updateClanDesc() {
+  const desc = document.getElementById('clan-desc-input')?.value.trim();
+  if (desc === undefined) return;
+  fetch('/api/game/clan/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description: desc })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) loadClanView();
+      else alert(data.error || '更新失敗');
+    })
+    .catch(() => alert('伺服器錯誤'));
 }
 
 function showUniqueNotification(data) {

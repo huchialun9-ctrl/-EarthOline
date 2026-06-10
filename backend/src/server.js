@@ -77,6 +77,8 @@ app.use(express.static(path.join(__dirname, '../../client')));
 app.use('/api', require('./routes/mongoAuth')(passport));
 app.use('/api', require('./routes/mongoGame'));
 app.use('/api', require('./routes/mongoAdmin'));
+app.use('/api', require('./routes/mongoQuest'));
+app.use('/api', require('./routes/mongoClan'));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../client/index.html'));
