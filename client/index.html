@@ -24,14 +24,37 @@
         <div class="login-box-border"></div>
         <div class="login-header pixel-text">市民身份验证</div>
         <div class="login-divider"></div>
-        <button id="btn-discord-login" class="pixel-btn discord-btn" onclick="loginWithDiscord()">
-          <span class="pixel-icon icon-discord"></span>
-          <span class="pixel-btn-text">Discord 一鍵登入</span>
-        </button>
-        <button id="btn-dev-login" class="pixel-btn dev-btn" onclick="devLogin()">
-          <span class="pixel-icon icon-tool"></span>
-          <span class="pixel-btn-text">開發者模式</span>
-        </button>
+        <div id="login-form" class="login-form">
+          <div class="login-tabs">
+            <span class="login-tab active" data-tab="login" onclick="switchLoginTab('login')">登入</span>
+            <span class="login-tab" data-tab="register" onclick="switchLoginTab('register')">註冊</span>
+          </div>
+          <div id="login-tab-login" class="login-tab-content active">
+            <input type="email" id="login-email" class="pixel-input" placeholder="電子信箱" autocomplete="email">
+            <input type="password" id="login-password" class="pixel-input" placeholder="密碼" autocomplete="current-password">
+            <button class="pixel-btn enter-btn" onclick="doLogin()">
+              <span class="pixel-icon icon-enter"></span>
+              <span class="pixel-btn-text">登入</span>
+            </button>
+            <div id="login-error" class="login-error pixel-text-sm"></div>
+          </div>
+          <div id="login-tab-register" class="login-tab-content">
+            <input type="email" id="reg-email" class="pixel-input" placeholder="電子信箱" autocomplete="email">
+            <input type="text" id="reg-username" class="pixel-input" placeholder="用戶名稱 (可選)" autocomplete="username">
+            <input type="password" id="reg-password" class="pixel-input" placeholder="密碼 (至少6位)" autocomplete="new-password">
+            <input type="password" id="reg-confirm" class="pixel-input" placeholder="確認密碼" autocomplete="new-password">
+            <button class="pixel-btn enter-btn" onclick="doRegister()">
+              <span class="pixel-icon icon-enter"></span>
+              <span class="pixel-btn-text">註冊</span>
+            </button>
+            <div id="reg-error" class="login-error pixel-text-sm"></div>
+          </div>
+          <div class="login-divider-sm"></div>
+          <button class="pixel-btn discord-btn" onclick="loginWithDiscord()">
+            <span class="pixel-icon icon-discord"></span>
+            <span class="pixel-btn-text">Discord 快速登入</span>
+          </button>
+        </div>
         <div class="citizen-agreement">
           <label class="agreement-checkbox">
             <input type="checkbox" id="agree-check" onchange="toggleAgree()">

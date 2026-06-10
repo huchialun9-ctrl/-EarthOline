@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   discordId: { type: String, unique: true, sparse: true },
+  email: { type: String, unique: true, sparse: true, lowercase: true, trim: true },
+  passwordHash: { type: String, default: null },
   username: { type: String, default: 'Miner' },
   discriminator: { type: String, default: '0' },
   avatar: { type: String, default: '' },

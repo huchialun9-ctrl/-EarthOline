@@ -72,14 +72,14 @@ if (process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET) {
   console.log('Discord OAuth not configured. Set DISCORD_CLIENT_SECRET in .env for Discord login.');
 }
 
-app.use(express.static(path.join(__dirname, '../../frontend')));
+app.use(express.static(path.join(__dirname, '../../client')));
 
 app.use('/api', require('./routes/mongoAuth')(passport));
 app.use('/api', require('./routes/mongoGame'));
 app.use('/api', require('./routes/mongoAdmin'));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../../client/index.html'));
 });
 
 app.get('/api/events', (req, res) => {

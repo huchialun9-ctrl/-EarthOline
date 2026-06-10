@@ -108,6 +108,103 @@ function showScreen(screenId) {
   document.getElementById(`screen-${screenId}`).classList.add('active');
 }
 
+function switchLoginTab(tab) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.login-tab[data-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.login-tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(`login-tab-${tab}`).classList.add('active');
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
+}
+
+function clearLoginErrors() {
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+
+  if (!email || !password) {
+    errEl.textContent = '請填寫信箱和密碼';
+    return;
+  }
+
+  errEl.textContent = '登入中...';
+  fetch('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        gameState.user = data.user;
+        gameState.faction = data.user.faction;
+        updateUserProfileDisplay();
+        document.getElementById('nav-username').textContent = data.user.username;
+        document.getElementById('game-username').textContent = data.user.username;
+        if (data.user.faction !== 'none') {
+          showScreen('game');
+          initGame();
+        } else {
+          showScreen('onboarding');
+        }
+      } else {
+        errEl.textContent = data.error || '登入失敗';
+      }
+    })
+    .catch(() => { errEl.textContent = '伺服器連線錯誤'; });
+}
+
+function doRegister() {
+  const email = document.getElementById('reg-email').value.trim();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+  const errEl = document.getElementById('reg-error');
+
+  if (!email || !password || !confirm) {
+    errEl.textContent = '請填寫所有必填欄位';
+    return;
+  }
+  if (password.length < 6) {
+    errEl.textContent = '密碼至少需要6個字元';
+    return;
+  }
+  if (password !== confirm) {
+    errEl.textContent = '兩次密碼輸入不一致';
+    return;
+  }
+
+  errEl.textContent = '註冊中...';
+  fetch('/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, username: username || undefined })
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        gameState.user = data.user;
+        gameState.faction = data.user.faction;
+        updateUserProfileDisplay();
+        document.getElementById('nav-username').textContent = data.user.username;
+        document.getElementById('game-username').textContent = data.user.username;
+        showScreen('onboarding');
+      } else {
+        errEl.textContent = data.error || '註冊失敗';
+      }
+    })
+    .catch(() => { errEl.textContent = '伺服器連線錯誤'; });
+}
+
+function loginWithDiscord() {
+  window.location.href = '/api/auth/discord';
+}
+
 function toggleAgree() {
   const checked = document.getElementById('agree-check').checked;
   const btn = document.getElementById('btn-enter');
@@ -118,31 +215,6 @@ function toggleAgree() {
     btn.classList.add('disabled');
     btn.disabled = true;
   }
-}
-
-function loginWithDiscord() {
-  window.location.href = '/api/auth/discord';
-}
-
-function devLogin() {
-  fetch('/api/auth/dev-login', { method: 'POST' })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        gameState.user = data.user;
-        gameState.faction = data.user.faction;
-        updateUserProfileDisplay();
-        if (data.user.faction !== 'none') {
-          showScreen('game');
-          initGame();
-        } else {
-          showScreen('onboarding');
-          document.getElementById('nav-username').textContent = data.user.username;
-          document.getElementById('game-username').textContent = data.user.username;
-        }
-      }
-    })
-    .catch(e => console.error('Dev login error:', e));
 }
 
 function enterGame() {
