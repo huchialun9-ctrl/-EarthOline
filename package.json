@@ -1,0 +1,19 @@
+{
+  "name": "earth-online",
+  "version": "1.0.0",
+  "description": "Earth Online - Global Civilization Mining Idle Game",
+  "private": true,
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "node --watch backend/src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.22.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^8.1.0",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4"
+  }
+}
