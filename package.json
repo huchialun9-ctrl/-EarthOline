@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Earth Online - Global Civilization Mining Idle Game",
   "private": true,
+  "engines": { "node": "20.x" },
   "scripts": {
     "start": "node backend/src/server.js",
     "dev": "node --watch backend/src/server.js",
