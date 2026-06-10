@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node backend/src/server.js",
     "dev": "node --watch backend/src/server.js",
-    "build": "echo 'Static site - no build needed'",
-    "cloudflare-build": "echo 'Build complete'"
+    "build": "node -e \"const fs=require('fs');const p='client/dist';fs.mkdirSync(p,{recursive:true});fs.readdirSync('client').filter(f=>f!=='dist').forEach(f=>fs.cpSync('client/'+f,p+'/'+f,{recursive:true}))\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
