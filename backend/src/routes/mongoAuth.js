@@ -53,8 +53,8 @@ module.exports = (passport) => {
   router.get('/auth/discord', passport.authenticate('discord'));
 
   router.get('/auth/discord/callback',
-    passport.authenticate('discord', { failureRedirect: '/' }),
-    (req, res) => { res.redirect('/game'); }
+    passport.authenticate('discord', { failureRedirect: process.env.FRONTEND_URL || '/' }),
+    (req, res) => { res.redirect((process.env.FRONTEND_URL || '') + '/game'); }
   );
 
   router.get('/auth/me', (req, res) => {

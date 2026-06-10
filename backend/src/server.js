@@ -9,19 +9,34 @@ const discordBot = require('./services/discordBot');
 
 const app = express();
 
+const isProduction = process.env.NODE_ENV === 'production';
+const ALLOWED_ORIGINS = isProduction
+  ? ['https://eartholine.pages.dev', 'https://earth-online.onrender.com']
+  : ['http://localhost:3000', 'http://127.0.0.1:3000'];
+
 if (process.env.DISCORD_BOT_TOKEN) {
   discordBot.setToken(process.env.DISCORD_BOT_TOKEN);
   console.log('Discord bot token configured');
 }
 
-app.use(cors());
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'earth-online-secret-key-2024',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 86400000 }
+  cookie: {
+    maxAge: 86400000,
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());

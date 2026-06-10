@@ -1,3 +1,7 @@
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : 'https://earth-online.onrender.com';
+
+const CF = (url, opts = {}) => fetch(API_BASE + url, { credentials: 'include', ...opts });
+
 let gameState = {
   user: null,
   gold: 0,
@@ -23,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function checkAuthStatus() {
-  fetch('/api/auth/me')
+  CF('/api/auth/me')
     .then(r => r.json())
     .then(data => {
       if (data.loggedIn) {
@@ -77,7 +81,7 @@ function updateUserProfileDisplay() {
 
 function setupSSE() {
   if (eventSource) eventSource.close();
-  eventSource = new EventSource('/api/events');
+  eventSource = new EventSource(API_BASE + '/api/events', { withCredentials: true });
 
   eventSource.onmessage = (event) => {
     try {
@@ -146,7 +150,7 @@ function doLogin() {
   }
 
   errEl.textContent = '登入中...';
-  fetch('/api/auth/login', {
+  CF('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -193,7 +197,7 @@ function doRegister() {
   }
 
   errEl.textContent = '註冊中...';
-  fetch('/api/auth/register', {
+  CF('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password, username: username || undefined })
@@ -215,7 +219,7 @@ function doRegister() {
 }
 
 function loginWithDiscord() {
-  window.location.href = '/api/auth/discord';
+  window.location.href = API_BASE + '/api/auth/discord';
 }
 
 function toggleAgree() {
@@ -234,7 +238,7 @@ function enterGame() {
   if (!document.getElementById('agree-check').checked) return;
   if (!gameState.user) return;
 
-  fetch('/api/auth/agreement', { method: 'POST' })
+  CF('/api/auth/agreement', { method: 'POST' })
     .then(r => r.json())
     .then(() => {
       if (gameState.user && gameState.user.faction !== 'none') {
@@ -254,7 +258,7 @@ function toggleUserMenu() {
 }
 
 function logout() {
-  fetch('/api/auth/logout', { method: 'POST' })
+  CF('/api/auth/logout', { method: 'POST' })
     .then(() => {
       if (eventSource) eventSource.close();
       if (goldInterval) clearInterval(goldInterval);
@@ -270,7 +274,7 @@ document.addEventListener('click', (e) => {
 });
 
 function selectFaction(faction) {
-  fetch('/api/game/faction/join', {
+  CF('/api/game/faction/join', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ faction })
@@ -319,7 +323,7 @@ function initGame() {
 }
 
 function loadCountries() {
-  fetch('/api/game/countries')
+  CF('/api/game/countries')
     .then(r => r.json())
     .then(countries => {
       gameState.countries = countries;
@@ -382,7 +386,7 @@ function getContinentName(cont) {
 function deployMine() {
   if (!gameState.currentCountry) return;
 
-  fetch('/api/game/deploy', {
+  CF('/api/game/deploy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ countryCode: gameState.currentCountry })
@@ -421,7 +425,7 @@ function startGoldSimulation() {
 }
 
 function claimGold() {
-  fetch('/api/game/mine/claim', {
+  CF('/api/game/mine/claim', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -437,7 +441,7 @@ function claimGold() {
 }
 
 function upgradeMine() {
-  fetch('/api/game/mine/upgrade', {
+  CF('/api/game/mine/upgrade', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -461,7 +465,7 @@ function upgradeMine() {
 function doRebirth() {
   if (!confirm('確定進行礦場轉生？你將失去所有金幣和礦層等級，但保留幸運晶石加成。')) return;
 
-  fetch('/api/game/rebirth', {
+  CF('/api/game/rebirth', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -547,7 +551,7 @@ function drawGacha() {
 }
 
 function performGachaDraw() {
-  fetch('/api/game/gacha/draw', {
+  CF('/api/game/gacha/draw', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -590,7 +594,7 @@ function performGachaDraw() {
 }
 
 function loadInventory() {
-  fetch('/api/game/inventory')
+  CF('/api/game/inventory')
     .then(r => r.json())
     .then(items => {
       gameState.inventory = items;
@@ -631,7 +635,7 @@ function renderInventory() {
 }
 
 function salvageItem(itemId) {
-  fetch('/api/game/salvage', {
+  CF('/api/game/salvage', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ itemId })
@@ -648,7 +652,7 @@ function salvageItem(itemId) {
 }
 
 function loadStats() {
-  fetch('/api/game/stats')
+  CF('/api/game/stats')
     .then(r => r.json())
     .then(stats => {
       gameState.stats = stats;
@@ -766,7 +770,7 @@ function switchGoalTab(tab) {
 }
 
 function loadQuests() {
-  fetch('/api/game/quests/daily')
+  CF('/api/game/quests/daily')
     .then(r => r.json())
     .then(data => {
       if (data.success) renderQuests(data.quests);
@@ -815,7 +819,7 @@ function renderQuests(dq) {
 }
 
 function claimQuest(index) {
-  fetch('/api/game/quests/daily/claim', {
+  CF('/api/game/quests/daily/claim', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ questIndex: index })
@@ -833,7 +837,7 @@ function claimQuest(index) {
 }
 
 function claimAllQuests() {
-  fetch('/api/game/quests/daily/claim-all', {
+  CF('/api/game/quests/daily/claim-all', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -850,7 +854,7 @@ function claimAllQuests() {
 }
 
 function loadAchievements() {
-  fetch('/api/game/achievements')
+  CF('/api/game/achievements')
     .then(r => r.json())
     .then(data => {
       if (data.success) renderAchievements(data.achievements);
@@ -890,7 +894,7 @@ function renderAchievements(achievements) {
 }
 
 function claimAchievement(key) {
-  fetch('/api/game/achievements/claim', {
+  CF('/api/game/achievements/claim', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ key })
@@ -909,7 +913,7 @@ function claimAchievement(key) {
 
 /* ===== CLAN ===== */
 function loadClanView() {
-  fetch('/api/game/clan/my')
+  CF('/api/game/clan/my')
     .then(r => r.json())
     .then(data => {
       if (data.success) {
@@ -986,7 +990,7 @@ function renderClanDetail(clan) {
 }
 
 function showClanList() {
-  fetch('/api/game/clan/list')
+  CF('/api/game/clan/list')
     .then(r => r.json())
     .then(data => {
       if (!data.success) return;
@@ -1042,7 +1046,7 @@ function createClan() {
   const tag = document.getElementById('clan-tag-input')?.value.trim();
   if (!name || !tag) { alert('請填寫公會名稱和標籤'); return; }
   if (tag.length > 4) { alert('標籤最多 4 個字'); return; }
-  fetch('/api/game/clan/create', {
+  CF('/api/game/clan/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, tag })
@@ -1056,7 +1060,7 @@ function createClan() {
 }
 
 function joinClan(clanId) {
-  fetch('/api/game/clan/join', {
+  CF('/api/game/clan/join', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ clanId })
@@ -1071,7 +1075,7 @@ function joinClan(clanId) {
 
 function leaveClan() {
   if (!confirm('確定退出公會？')) return;
-  fetch('/api/game/clan/leave', {
+  CF('/api/game/clan/leave', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -1084,7 +1088,7 @@ function leaveClan() {
 }
 
 function handleClanRequest(clanId, userId, accept) {
-  fetch('/api/game/clan/handle-request', {
+  CF('/api/game/clan/handle-request', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ clanId, userId, accept })
@@ -1099,7 +1103,7 @@ function handleClanRequest(clanId, userId, accept) {
 
 function kickClanMember(userId) {
   if (!confirm('確定踢出該成員？')) return;
-  fetch('/api/game/clan/kick', {
+  CF('/api/game/clan/kick', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId })
@@ -1114,7 +1118,7 @@ function kickClanMember(userId) {
 
 function transferClanLeader(userId) {
   if (!confirm('確定將會長轉讓給該成員？此操作不可撤銷！')) return;
-  fetch('/api/game/clan/transfer', {
+  CF('/api/game/clan/transfer', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId })
@@ -1130,7 +1134,7 @@ function transferClanLeader(userId) {
 function updateClanDesc() {
   const desc = document.getElementById('clan-desc-input')?.value.trim();
   if (desc === undefined) return;
-  fetch('/api/game/clan/update', {
+  CF('/api/game/clan/update', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ description: desc })
