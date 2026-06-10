@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   discordId: { type: String, unique: true, sparse: true },
   username: { type: String, default: 'Miner' },
+  discriminator: { type: String, default: '0' },
   avatar: { type: String, default: '' },
+  banner: { type: String, default: null },
+  accentColor: { type: Number, default: null },
+  locale: { type: String, default: null },
   faction: { type: String, enum: ['none', 'asia', 'americas', 'europe'], default: 'none' },
   gold: { type: Number, default: 0 },
   goldPerSec: { type: Number, default: 0 },

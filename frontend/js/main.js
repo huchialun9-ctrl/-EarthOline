@@ -1,6 +1,3 @@
-// Earth Online - Main Game Engine
-// Handles UI, game state, socket communication, and rendering
-
 let gameState = {
   user: null,
   gold: 0,
@@ -21,7 +18,6 @@ let goldInterval = null;
 let animationFrame = null;
 let eventSource = null;
 
-// ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthStatus();
   initMineCanvas();
@@ -41,19 +37,43 @@ function checkAuthStatus() {
         gameState.totalRebirths = data.user.totalRebirths || data.user.total_rebirths || 0;
         gameState.rebirthBonus = data.user.rebirthBonus || data.user.rebirth_bonus || 1.0;
 
+        updateUserProfileDisplay();
+
         if (data.user.faction !== 'none') {
           showScreen('game');
           initGame();
         } else {
           showScreen('onboarding');
-          document.getElementById('nav-username').textContent = data.user.username;
-          document.getElementById('game-username').textContent = data.user.username;
+          document.getElementById('nav-username').textContent = data.user.discordTag || data.user.username;
+          document.getElementById('game-username').textContent = data.user.discordTag || data.user.username;
         }
       } else {
         showScreen('login');
       }
     })
     .catch(() => showScreen('login'));
+}
+
+function updateUserProfileDisplay() {
+  if (!gameState.user) return;
+  const u = gameState.user;
+  const displayName = u.discordTag || u.username;
+  const avatarUrl = u.discordAvatarUrl;
+
+  document.getElementById('nav-username').textContent = displayName;
+  document.getElementById('game-username').textContent = displayName;
+  document.getElementById('menu-username').textContent = displayName;
+  document.getElementById('menu-discord-tag').textContent = u.discordId ? (u.discriminator && u.discriminator !== '0' ? `@${u.username}#${u.discriminator}` : `@${u.username}`) : 'localhost';
+
+  if (avatarUrl) {
+    document.querySelectorAll('.user-avatar').forEach(el => {
+      el.src = avatarUrl;
+      el.style.display = 'inline-block';
+    });
+    document.getElementById('menu-avatar').src = avatarUrl;
+  } else {
+    document.getElementById('menu-avatar').style.display = 'none';
+  }
 }
 
 function setupSSE() {
@@ -78,13 +98,11 @@ function setupSSE() {
   };
 }
 
-// ===== SCREEN MANAGEMENT =====
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(`screen-${screenId}`).classList.add('active');
 }
 
-// ===== LOGIN =====
 function toggleAgree() {
   const checked = document.getElementById('agree-check').checked;
   const btn = document.getElementById('btn-enter');
@@ -101,6 +119,27 @@ function loginWithDiscord() {
   window.location.href = '/api/auth/discord';
 }
 
+function devLogin() {
+  fetch('/api/auth/dev-login', { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        gameState.user = data.user;
+        gameState.faction = data.user.faction;
+        updateUserProfileDisplay();
+        if (data.user.faction !== 'none') {
+          showScreen('game');
+          initGame();
+        } else {
+          showScreen('onboarding');
+          document.getElementById('nav-username').textContent = data.user.username;
+          document.getElementById('game-username').textContent = data.user.username;
+        }
+      }
+    })
+    .catch(e => console.error('Dev login error:', e));
+}
+
 function enterGame() {
   if (!document.getElementById('agree-check').checked) return;
   if (!gameState.user) return;
@@ -113,13 +152,33 @@ function enterGame() {
         initGame();
       } else {
         showScreen('onboarding');
-        document.getElementById('nav-username').textContent = gameState.user.username;
-        document.getElementById('game-username').textContent = gameState.user.username;
+        document.getElementById('nav-username').textContent = gameState.user.discordTag || gameState.user.username;
+        document.getElementById('game-username').textContent = gameState.user.discordTag || gameState.user.username;
       }
     });
 }
 
-// ===== ONBOARDING / FACTIONS =====
+function toggleUserMenu() {
+  const menu = document.getElementById('user-menu');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+function logout() {
+  fetch('/api/auth/logout', { method: 'POST' })
+    .then(() => {
+      if (eventSource) eventSource.close();
+      if (goldInterval) clearInterval(goldInterval);
+      location.reload();
+    });
+}
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('user-menu');
+  if (menu && !menu.classList.contains('hidden') && !e.target.closest('.user-profile') && !e.target.closest('#user-menu')) {
+    menu.classList.add('hidden');
+  }
+});
+
 function selectFaction(faction) {
   fetch('/api/game/faction/join', {
     method: 'POST',
@@ -144,9 +203,9 @@ function enterWorld() {
   initGame();
 }
 
-// ===== GAME INIT =====
 function initGame() {
-  document.getElementById('game-username').textContent = gameState.user ? gameState.user.username : 'Miner';
+  document.getElementById('game-username').textContent = gameState.user ? (gameState.user.discordTag || gameState.user.username) : 'Miner';
+  updateUserProfileDisplay();
   setupSSE();
 
   const mapContainer = document.getElementById('map-container');
@@ -166,11 +225,9 @@ function initGame() {
   document.getElementById('btn-upgrade').textContent =
     `升級礦層 (${formatGold(Math.pow(10, gameState.mineLevel) * 100)})`;
 
-  // Init mine canvas animation
   initMineCanvasAnimation();
 }
 
-// ===== COUNTRY MAP =====
 function loadCountries() {
   fetch('/api/game/countries')
     .then(r => r.json())
@@ -221,7 +278,6 @@ function deployMine() {
     .catch(e => console.error('Deploy error:', e));
 }
 
-// ===== MINING =====
 function startGoldSimulation() {
   if (goldInterval) clearInterval(goldInterval);
 
@@ -316,7 +372,6 @@ function updateMiningUI() {
   });
 }
 
-// ===== GACHA =====
 function drawGacha() {
   const btn = document.getElementById('btn-gacha');
   btn.disabled = true;
@@ -327,20 +382,17 @@ function drawGacha() {
   canvas.width = 300;
   canvas.height = 180;
 
-  // Animate gacha
   let frame = 0;
   const animateGacha = () => {
     ctx.clearRect(0, 0, 300, 180);
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, 300, 180);
 
-    // Scanline effect
     for (let i = 0; i < 180; i += 8) {
       ctx.fillStyle = `rgba(255,255,255,${0.02 + Math.random() * 0.05})`;
       ctx.fillRect(0, i, 300, 4);
     }
 
-    // Random blocks
     for (let i = 0; i < 20; i++) {
       const bx = Math.random() * 280;
       const by = Math.random() * 160;
@@ -351,14 +403,12 @@ function drawGacha() {
       ctx.strokeRect(bx, by, size, size);
     }
 
-    // Glow overlay
     const gradient = ctx.createRadialGradient(150, 90, 10, 150, 90, 100);
     gradient.addColorStop(0, `rgba(255, 204, 0, ${0.2 + Math.sin(frame * 0.2) * 0.1})`);
     gradient.addColorStop(1, 'rgba(255, 204, 0, 0)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 300, 180);
 
-    // Lights animation
     document.querySelectorAll('.light').forEach((l, i) => {
       l.classList.toggle('active', Math.sin(frame * 0.1 + i) > 0.3);
     });
@@ -401,7 +451,7 @@ function performGachaDraw() {
         `;
 
         if (data.isUnique) {
-          showUniqueNotification({ username: gameState.user.username, artifactName: data.artifact.name_cn || data.artifact.name });
+          showUniqueNotification({ username: gameState.user.discordTag || gameState.user.username, artifactName: data.artifact.name_cn || data.artifact.name });
         }
 
         updateMiningUI();
@@ -418,7 +468,6 @@ function performGachaDraw() {
     });
 }
 
-// ===== INVENTORY =====
 function loadInventory() {
   fetch('/api/game/inventory')
     .then(r => r.json())
@@ -477,7 +526,6 @@ function salvageItem(itemId) {
     .catch(e => console.error('Salvage error:', e));
 }
 
-// ===== STATS =====
 function loadStats() {
   fetch('/api/game/stats')
     .then(r => r.json())
@@ -495,7 +543,6 @@ function updateStatsUI() {
   document.getElementById('stat-online-users').textContent = gameState.stats.onlineUsers || 0;
   document.getElementById('stat-global-gps').textContent = formatGold(gameState.stats.globalGoldPerSec || 0);
 
-  // Faction aura
   const auraList = document.getElementById('faction-aura-list');
   if (auraList && gameState.stats.factionAuras) {
     const sorted = [...gameState.stats.factionAuras].sort((a, b) => b.aura_value - a.aura_value);
@@ -510,7 +557,6 @@ function updateStatsUI() {
     `).join('');
   }
 
-  // Leaderboard
   const lbList = document.getElementById('leaderboard-list');
   if (lbList && gameState.stats.topPlayers) {
     lbList.innerHTML = gameState.stats.topPlayers.map((p, i) => `
@@ -527,7 +573,6 @@ function getFactionName(f) {
   return names[f] || f;
 }
 
-// ===== TAB SWITCHING =====
 function switchTab(tab) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
@@ -543,7 +588,6 @@ function switchTab(tab) {
   if (tab === 'mine') initMineCanvasAnimation();
 }
 
-// ===== MAP CONTROLS =====
 function zoomMap(dir) {
   if (pixelMap) {
     if (dir > 0) pixelMap.zoomIn();
@@ -555,7 +599,6 @@ function resetMap() {
   if (pixelMap) pixelMap.resetView();
 }
 
-// ===== MINE CANVAS =====
 function initMineCanvas() {
   const canvas = document.getElementById('mine-canvas');
   if (!canvas) return;
@@ -574,22 +617,18 @@ function initMineCanvasAnimation() {
   const animate = () => {
     ctx.clearRect(0, 0, 300, 180);
 
-    // Background layers based on mine level
     const level = gameState.mineLevel;
     const colors = ['#444433', '#554433', '#446688', '#443366', '#662211'];
     const lc = colors[Math.min(level - 1, colors.length - 1)];
 
-    // Cave wall
     ctx.fillStyle = '#111111';
     ctx.fillRect(0, 0, 300, 180);
 
-    // Rock layers
     for (let y = 0; y < 180; y += 16) {
       ctx.fillStyle = y < 40 ? '#222222' : (y < 80 ? lc : '#1a1a1a');
       ctx.fillRect(0, y, 300, 16);
     }
 
-    // Ore veins
     for (let i = 0; i < 5 + level * 2; i++) {
       const ox = Math.sin(i * 1.5 + frame * 0.02) * 100 + 150;
       const oy = Math.cos(i * 2.3 + frame * 0.03) * 60 + 100;
@@ -597,7 +636,6 @@ function initMineCanvasAnimation() {
       ctx.fillRect(ox, oy, 8, 8);
     }
 
-    // Pickaxe animation
     const px = 150 + Math.sin(frame * 0.05) * 20;
     const py = 80 + Math.sin(frame * 0.08) * 10;
     ctx.fillStyle = '#886644';
@@ -605,7 +643,6 @@ function initMineCanvasAnimation() {
     ctx.fillStyle = '#aaaaaa';
     ctx.fillRect(px - 6, py - 24, 8, 6);
 
-    // Sparks
     if (Math.random() > 0.7) {
       ctx.fillStyle = '#ffcc00';
       const sx = px + (Math.random() - 0.5) * 30;
@@ -621,7 +658,6 @@ function initMineCanvasAnimation() {
   animate();
 }
 
-// ===== UNIQUE NOTIFICATION =====
 function showUniqueNotification(data) {
   const notif = document.getElementById('unique-notification');
   const msg = document.getElementById('unique-msg');
@@ -632,7 +668,6 @@ function showUniqueNotification(data) {
   }
 }
 
-// ===== UTILITY =====
 function formatGold(amount) {
   if (amount >= 1000000000000) return (amount / 1000000000000).toFixed(1) + 'T';
   if (amount >= 1000000000) return (amount / 1000000000).toFixed(1) + 'B';
@@ -641,7 +676,6 @@ function formatGold(amount) {
   return Math.floor(amount).toLocaleString();
 }
 
-// ===== GAME LOOP =====
 setInterval(() => {
   if (gameState.stats) {
     loadCountries();

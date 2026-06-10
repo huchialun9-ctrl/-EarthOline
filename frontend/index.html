@@ -25,6 +25,10 @@
           <span class="pixel-icon icon-discord"></span>
           <span class="pixel-btn-text">Discord 一鍵登入</span>
         </button>
+        <button id="btn-dev-login" class="pixel-btn dev-btn" onclick="devLogin()">
+          <span class="pixel-icon icon-tool"></span>
+          <span class="pixel-btn-text">開發者模式</span>
+        </button>
         <div class="citizen-agreement">
           <label class="agreement-checkbox">
             <input type="checkbox" id="agree-check" onchange="toggleAgree()">
@@ -54,8 +58,11 @@
         <img src="assets/logo.svg" alt="Earth Online" style="height:36px; image-rendering:pixelated;">
       </div>
       <div class="nav-right">
-        <span class="pixel-text" id="nav-username"></span>
-        <span class="pixel-icon icon-user"></span>
+        <div class="user-profile" onclick="toggleUserMenu()">
+          <img id="onboarding-avatar" class="user-avatar" src="" alt="" style="display:none;">
+          <span class="pixel-text" id="nav-username"></span>
+          <span class="pixel-icon icon-user"></span>
+        </div>
       </div>
     </nav>
     <div class="onboarding-content">
@@ -152,8 +159,24 @@
         </span>
       </div>
       <div class="nav-right">
-        <span class="pixel-text" id="game-username"></span>
-        <span class="pixel-icon icon-user"></span>
+        <div class="user-profile" onclick="toggleUserMenu()">
+          <img id="game-avatar" class="user-avatar" src="" alt="" style="display:none;">
+          <span class="pixel-text" id="game-username"></span>
+          <span class="pixel-icon icon-user"></span>
+        </div>
+        <div class="user-menu hidden" id="user-menu">
+          <div class="user-menu-header">
+            <img id="menu-avatar" class="menu-avatar" src="" alt="">
+            <div>
+              <div id="menu-username" class="pixel-text"></div>
+              <div id="menu-discord-tag" class="pixel-text-sm"></div>
+            </div>
+          </div>
+          <div class="user-menu-divider"></div>
+          <button class="pixel-btn-sm menu-btn" onclick="logout()">
+            <span class="pixel-icon icon-logout"></span> 登出
+          </button>
+        </div>
       </div>
     </nav>
     <div class="game-content">
@@ -326,7 +349,6 @@
       </div>
     </div>
 
-    <!-- Unique Drop Notification -->
     <div id="unique-notification" class="unique-notif hidden">
       <div class="unique-notif-content">
         <span class="pixel-icon icon-crown"></span>
