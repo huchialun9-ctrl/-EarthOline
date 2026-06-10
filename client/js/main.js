@@ -39,18 +39,18 @@ function checkAuthStatus() {
         updateUserProfileDisplay();
 
         if (data.user.faction !== 'none') {
-          showScreen('game');
+          showPage('game');
           initGame();
         } else {
-          showScreen('onboarding');
+          showPage('onboarding');
           document.getElementById('nav-username').textContent = data.user.discordTag || data.user.username;
           document.getElementById('game-username').textContent = data.user.discordTag || data.user.username;
         }
       } else {
-        showScreen('login');
+        showPage('login');
       }
     })
-    .catch(() => showScreen('login'));
+    .catch(() => showPage('login'));
 }
 
 function updateUserProfileDisplay() {
@@ -103,9 +103,20 @@ function setupSSE() {
   };
 }
 
-function showScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`screen-${screenId}`).classList.add('active');
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${pageId}`).classList.add('active');
+}
+
+function switchGamePage(page) {
+  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.sidebar-btn[data-page="${page}"]`).classList.add('active');
+  document.querySelectorAll('.game-page').forEach(g => g.classList.remove('active'));
+  document.getElementById(`gpage-${page}`).classList.add('active');
+  if (page === 'map' && worldMap) setTimeout(() => worldMap.invalidateSize(), 100);
+  if (page === 'stats') loadStats();
+  if (page === 'inventory') loadInventory();
+  if (page === 'mine') initMineCanvasAnimation();
 }
 
 function switchLoginTab(tab) {
@@ -147,10 +158,10 @@ function doLogin() {
         document.getElementById('nav-username').textContent = data.user.username;
         document.getElementById('game-username').textContent = data.user.username;
         if (data.user.faction !== 'none') {
-          showScreen('game');
+          showPage('game');
           initGame();
         } else {
-          showScreen('onboarding');
+          showPage('onboarding');
         }
       } else {
         errEl.textContent = data.error || '登入失敗';
@@ -193,7 +204,7 @@ function doRegister() {
         updateUserProfileDisplay();
         document.getElementById('nav-username').textContent = data.user.username;
         document.getElementById('game-username').textContent = data.user.username;
-        showScreen('onboarding');
+        showPage('onboarding');
       } else {
         errEl.textContent = data.error || '註冊失敗';
       }
@@ -225,10 +236,10 @@ function enterGame() {
     .then(r => r.json())
     .then(() => {
       if (gameState.user && gameState.user.faction !== 'none') {
-        showScreen('game');
+        showPage('game');
         initGame();
       } else {
-        showScreen('onboarding');
+        showPage('onboarding');
         document.getElementById('nav-username').textContent = gameState.user.discordTag || gameState.user.username;
         document.getElementById('game-username').textContent = gameState.user.discordTag || gameState.user.username;
       }
@@ -276,7 +287,7 @@ function selectFaction(faction) {
 
 function enterWorld() {
   if (gameState.faction === 'none') return;
-  showScreen('game');
+  showPage('game');
   initGame();
 }
 
@@ -681,20 +692,7 @@ function getFactionName(f) {
   return names[f] || f;
 }
 
-function switchTab(tab) {
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
 
-  document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.add('active');
-
-  if (tab === 'map' && worldMap) {
-    setTimeout(() => worldMap.invalidateSize(), 100);
-  }
-  if (tab === 'stats') loadStats();
-  if (tab === 'inventory') loadInventory();
-  if (tab === 'mine') initMineCanvasAnimation();
-}
 
 function initMineCanvas() {
   const canvas = document.getElementById('mine-canvas');

@@ -5,320 +5,305 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>地球在線 | Earth Online</title>
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/pixel-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/pixel-icons.css">
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 </head>
 <body>
 
 <div id="app">
-  <!-- SCREEN 1: LOGIN & AGREEMENT -->
-  <div id="screen-login" class="screen active">
-    <div class="login-bg"></div>
-    <div class="login-container">
-      <div class="pixel-wordart logo-title">EARTH ONLINE</div>
-      <div class="pixel-wordart-sub">地球在線</div>
-      <div class="login-box">
-        <div class="login-box-border"></div>
-        <div class="login-header pixel-text">市民身份验证</div>
-        <div class="login-divider"></div>
-        <div id="login-form" class="login-form">
+  <!-- ===== PAGE 1: LOGIN ===== -->
+  <div id="page-login" class="page active">
+    <div class="login-bg-grid"></div>
+    <div class="login-wrapper">
+      <div class="login-brand">
+        <div class="login-logo">
+          <img src="assets/logo.svg" alt="Earth Online" class="pixel-logo">
+        </div>
+        <div class="pixel-wordart logo-title">EARTH ONLINE</div>
+        <div class="pixel-wordart-sub">地球在線</div>
+      </div>
+      <div class="login-card">
+        <div class="login-card-header">
           <div class="login-tabs">
-            <span class="login-tab active" data-tab="login" onclick="switchLoginTab('login')">登入</span>
-            <span class="login-tab" data-tab="register" onclick="switchLoginTab('register')">註冊</span>
+            <button class="login-tab active" data-tab="login" onclick="switchLoginTab('login')">登入</button>
+            <button class="login-tab" data-tab="register" onclick="switchLoginTab('register')">註冊</button>
           </div>
-          <div id="login-tab-login" class="login-tab-content active">
+        </div>
+        <div class="login-card-body">
+          <div id="login-tab-login" class="login-tab-panel active">
             <input type="email" id="login-email" class="pixel-input" placeholder="電子信箱" autocomplete="email">
             <input type="password" id="login-password" class="pixel-input" placeholder="密碼" autocomplete="current-password">
-            <button class="pixel-btn enter-btn" onclick="doLogin()">
-              <span class="pixel-icon icon-enter"></span>
-              <span class="pixel-btn-text">登入</span>
+            <button class="pixel-btn btn-primary btn-full" onclick="doLogin()">
+              <span class="pixel-icon icon-enter"></span> 登入
             </button>
-            <div id="login-error" class="login-error pixel-text-sm"></div>
+            <div id="login-error" class="form-msg"></div>
           </div>
-          <div id="login-tab-register" class="login-tab-content">
+          <div id="login-tab-register" class="login-tab-panel">
             <input type="email" id="reg-email" class="pixel-input" placeholder="電子信箱" autocomplete="email">
             <input type="text" id="reg-username" class="pixel-input" placeholder="用戶名稱 (可選)" autocomplete="username">
             <input type="password" id="reg-password" class="pixel-input" placeholder="密碼 (至少6位)" autocomplete="new-password">
             <input type="password" id="reg-confirm" class="pixel-input" placeholder="確認密碼" autocomplete="new-password">
-            <button class="pixel-btn enter-btn" onclick="doRegister()">
-              <span class="pixel-icon icon-enter"></span>
-              <span class="pixel-btn-text">註冊</span>
+            <button class="pixel-btn btn-primary btn-full" onclick="doRegister()">
+              <span class="pixel-icon icon-enter"></span> 註冊
             </button>
-            <div id="reg-error" class="login-error pixel-text-sm"></div>
+            <div id="reg-error" class="form-msg"></div>
           </div>
-          <div class="login-divider-sm"></div>
-          <button class="pixel-btn discord-btn" onclick="loginWithDiscord()">
-            <span class="pixel-icon icon-discord"></span>
-            <span class="pixel-btn-text">Discord 快速登入</span>
+          <div class="login-divider"><span>或</span></div>
+          <button class="pixel-btn btn-discord btn-full" onclick="loginWithDiscord()">
+            <span class="pixel-icon icon-discord"></span> Discord 快速登入
           </button>
         </div>
-        <div class="citizen-agreement">
-          <label class="agreement-checkbox">
-            <input type="checkbox" id="agree-check" onchange="toggleAgree()">
-            <span class="check-pixel"></span>
-            <span class="pixel-text-sm">我已閱讀並同意《市民公約條約》</span>
-          </label>
-          <div class="agreement-text pixel-text-sm">
-            本人宣誓遵守地球在線開採秩序，不以任何形式使用外掛程式、不竄改客戶端數據、不惡意利用遊戲漏洞。<br>
-            違反者將面臨永久封禁及全服公告。
+        <div class="login-card-footer">
+          <div class="citizen-agreement">
+            <label class="agree-checkbox">
+              <input type="checkbox" id="agree-check" onchange="toggleAgree()">
+              <span class="check-pixel"></span>
+              <span>我已閱讀並同意《市民公約條約》</span>
+            </label>
+            <div class="agree-text">
+              本人宣誓遵守地球在線開採秩序，不以任何形式使用外掛程式、不竄改客戶端數據、不惡意利用遊戲漏洞。違反者將面臨永久封禁及全服公告。
+            </div>
           </div>
+          <button id="btn-enter" class="pixel-btn btn-success btn-full disabled" disabled onclick="enterGame()">
+            <span class="pixel-icon icon-compass"></span> 踏入世界
+          </button>
         </div>
-        <button id="btn-enter" class="pixel-btn enter-btn disabled" disabled onclick="enterGame()">
-          <span class="pixel-icon icon-enter"></span>
-          <span class="pixel-btn-text">踏入世界</span>
-        </button>
       </div>
-    </div>
-    <div class="login-footer pixel-text-sm">
-      <span class="pixel-icon icon-shield"></span> 數據 100% 後端保護 · 嚴禁任何作弊行為
+      <div class="login-footer-text">
+        <span class="pixel-icon icon-shield"></span> 數據 100% 後端保護 · 嚴禁任何作弊行為
+      </div>
     </div>
   </div>
 
-  <!-- SCREEN 2: ONBOARDING / FACTIONS -->
-  <div id="screen-onboarding" class="screen">
-    <nav class="top-nav">
-      <div class="nav-logo">
-        <img src="assets/logo.svg" alt="Earth Online" style="height:36px; image-rendering:pixelated;">
+  <!-- ===== PAGE 2: ONBOARDING ===== -->
+  <div id="page-onboarding" class="page">
+    <nav class="topbar">
+      <div class="topbar-left">
+        <img src="assets/logo.svg" alt="Earth Online" class="topbar-logo">
+        <span class="topbar-title">地球在線</span>
       </div>
-      <div class="nav-right">
-        <div class="user-profile" onclick="toggleUserMenu()">
+      <div class="topbar-right">
+        <div class="user-badge" onclick="toggleUserMenu()">
           <img id="onboarding-avatar" class="user-avatar" src="" alt="" style="display:none;">
-          <span class="pixel-text" id="nav-username"></span>
-          <span class="pixel-icon icon-user"></span>
-        </div>
-      </div>
-    </nav>
-    <div class="onboarding-content">
-      <div class="guide-panel">
-        <h2 class="pixel-wordart-md">全球開採指南</h2>
-        <div class="guide-text pixel-text">
-          歡迎加入地球在線，市民。<br><br>
-          地球的核心蘊藏著無盡的資源。你將從碎石地層開始，逐步深入沉積礦脈、閃耀鑽石層、暗物質礦區，
-          最終抵達地球星核。<br><br>
-          選擇你的陣營，與全球玩家一同展開這場永不休止的開採競賽。
-        </div>
-      </div>
-      <div class="faction-select">
-        <h2 class="pixel-wordart-md">選擇你的陣營</h2>
-        <div class="faction-cards">
-          <div class="faction-card faction-asia" onclick="selectFaction('asia')">
-            <div class="faction-image">
-              <img src="assets/pixel-art/taipei101-pixel.png" alt="Taipei 101" class="pixel-img" onerror="this.style.display='none'">
-              <div class="faction-image-fallback" data-faction="asia"></div>
-            </div>
-            <div class="faction-label">
-              <span class="pixel-icon icon-temple"></span>
-              <span class="pixel-wordart-xs">亞洲陣營</span>
-            </div>
-            <div class="faction-desc pixel-text-sm">大本營：台北 · 東京<br>盛產地心深層礦脈</div>
-            <div class="faction-mine-icon">
-              <span class="pixel-icon icon-pickaxe"></span>
-              <span class="pixel-icon icon-pickaxe"></span>
-              <span class="pixel-icon icon-pickaxe"></span>
-            </div>
-          </div>
-          <div class="faction-card faction-americas" onclick="selectFaction('americas')">
-            <div class="faction-image">
-              <img src="assets/pixel-art/liberty-pixel.png" alt="Statue of Liberty" class="pixel-img" onerror="this.style.display='none'">
-              <div class="faction-image-fallback" data-faction="americas"></div>
-            </div>
-            <div class="faction-label">
-              <span class="pixel-icon icon-building"></span>
-              <span class="pixel-wordart-xs">美洲陣營</span>
-            </div>
-            <div class="faction-desc pixel-text-sm">大本營：紐約<br>金融與商業帝國</div>
-            <div class="faction-mine-icon">
-              <span class="pixel-icon icon-coin"></span>
-              <span class="pixel-icon icon-coin"></span>
-              <span class="pixel-icon icon-coin"></span>
-            </div>
-          </div>
-          <div class="faction-card faction-europe" onclick="selectFaction('europe')">
-            <div class="faction-image">
-              <img src="assets/pixel-art/eiffel-pixel.png" alt="Eiffel Tower" class="pixel-img" onerror="this.style.display='none'">
-              <div class="faction-image-fallback" data-faction="europe"></div>
-            </div>
-            <div class="faction-label">
-              <span class="pixel-icon icon-castle"></span>
-              <span class="pixel-wordart-xs">歐洲陣營</span>
-            </div>
-            <div class="faction-desc pixel-text-sm">大本營：倫敦 · 巴黎<br>埋藏極高的遠古氣運</div>
-            <div class="faction-mine-icon">
-              <span class="pixel-icon icon-star"></span>
-              <span class="pixel-icon icon-star"></span>
-              <span class="pixel-icon icon-star"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="pixel-btn enter-btn" id="btn-enter-world" onclick="enterWorld()">
-        <span class="pixel-icon icon-compass"></span>
-        <span class="pixel-btn-text">踏入世界</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- SCREEN 3: MAIN GAME -->
-  <div id="screen-game" class="screen">
-    <nav class="top-nav">
-      <div class="nav-logo">
-        <img src="assets/logo.svg" alt="Earth Online" style="height:36px; image-rendering:pixelated;">
-      </div>
-      <div class="nav-tabs">
-        <span class="nav-tab active" data-tab="map" onclick="switchTab('map')">
-          <span class="pixel-icon icon-globe"></span> 世界地圖
-        </span>
-        <span class="nav-tab" data-tab="mine" onclick="switchTab('mine')">
-          <span class="pixel-icon icon-pickaxe"></span> 礦場
-        </span>
-        <span class="nav-tab" data-tab="gacha" onclick="switchTab('gacha')">
-          <span class="pixel-icon icon-chest"></span> 秘寶
-        </span>
-        <span class="nav-tab" data-tab="inventory" onclick="switchTab('inventory')">
-          <span class="pixel-icon icon-backpack"></span> 倉庫
-        </span>
-        <span class="nav-tab" data-tab="stats" onclick="switchTab('stats')">
-          <span class="pixel-icon icon-chart"></span> 統計
-        </span>
-      </div>
-      <div class="nav-right">
-        <div class="user-profile" onclick="toggleUserMenu()">
-          <img id="game-avatar" class="user-avatar" src="" alt="" style="display:none;">
-          <span class="pixel-text" id="game-username"></span>
+          <span class="user-name" id="nav-username"></span>
           <span class="pixel-icon icon-user"></span>
         </div>
         <div class="user-menu hidden" id="user-menu">
           <div class="user-menu-header">
             <img id="menu-avatar" class="menu-avatar" src="" alt="">
             <div>
-              <div id="menu-username" class="pixel-text"></div>
-              <div id="menu-discord-tag" class="pixel-text-sm"></div>
+              <div id="menu-username" class="menu-name"></div>
+              <div id="menu-discord-tag" class="menu-tag"></div>
             </div>
           </div>
-          <div class="user-menu-divider"></div>
-          <button class="pixel-btn-sm menu-btn" onclick="logout()">
+          <div class="menu-divider"></div>
+          <button class="pixel-btn btn-sm btn-full" onclick="logout()">
             <span class="pixel-icon icon-logout"></span> 登出
           </button>
         </div>
       </div>
     </nav>
-    <div class="game-content">
-      <!-- MAP TAB -->
-      <div class="game-tab active" id="tab-map">
-        <div class="map-container" id="map-container">
-          <div id="world-leaflet-map" style="width:100%;height:100%;"></div>
-        </div>
-        <div class="country-info" id="country-info">
-          <div class="country-info-header pixel-text" id="country-name">選擇一個國家</div>
-          <div class="country-info-body">
-            <div class="info-row"><span class="pixel-icon icon-users"></span> <span class="pixel-text-sm">在線開採人數:</span> <span id="country-online">0</span></div>
-            <div class="info-row"><span class="pixel-icon icon-coin"></span> <span class="pixel-text-sm">總產出/秒:</span> <span id="country-gps">0</span></div>
-            <div class="info-row"><span class="pixel-icon icon-flag"></span> <span class="pixel-text-sm">所屬陣營:</span> <span id="country-continent">-</span></div>
+    <div class="onboarding-body">
+      <div class="onboarding-card guide-card">
+        <h2 class="section-title">全球開採指南</h2>
+        <p class="guide-text">
+          歡迎加入地球在線，市民。地球的核心蘊藏著無盡的資源。你將從碎石地層開始，逐步深入沉積礦脈、閃耀鑽石層、暗物質礦區，最終抵達地球星核。<br><br>
+          選擇你的陣營，與全球玩家一同展開這場永不休止的開採競賽。
+        </p>
+      </div>
+      <h2 class="section-title" style="text-align:center;">選擇你的陣營</h2>
+      <div class="faction-row">
+        <div class="faction-card" onclick="selectFaction('asia')">
+          <div class="faction-banner" data-faction="asia">
+            <span class="faction-emblem icon-temple"></span>
           </div>
-          <div class="country-rest-info" id="country-rest-info" style="display:none;"></div>
-          <button class="pixel-btn deploy-btn" onclick="deployMine()" id="btn-deploy">
-            <span class="pixel-icon icon-pickaxe"></span> 在此建立礦場
-          </button>
+          <h3 class="faction-name" style="color:var(--asia);">亞洲陣營</h3>
+          <p class="faction-desc">大本營：台北 · 東京<br>盛產地心深層礦脈</p>
+          <div class="faction-stats">
+            <span class="pixel-icon icon-pickaxe"></span>
+            <span class="pixel-icon icon-pickaxe"></span>
+            <span class="pixel-icon icon-pickaxe"></span>
+          </div>
         </div>
-        <div class="mining-panel" id="mining-panel">
-          <div class="mining-header pixel-text">開採進度</div>
-          <div class="mining-gold">
+        <div class="faction-card" onclick="selectFaction('americas')">
+          <div class="faction-banner" data-faction="americas">
+            <span class="faction-emblem icon-building"></span>
+          </div>
+          <h3 class="faction-name" style="color:var(--americas);">美洲陣營</h3>
+          <p class="faction-desc">大本營：紐約<br>金融與商業帝國</p>
+          <div class="faction-stats">
             <span class="pixel-icon icon-coin"></span>
-            <span class="gold-amount" id="display-gold">0</span>
+            <span class="pixel-icon icon-coin"></span>
+            <span class="pixel-icon icon-coin"></span>
           </div>
-          <div class="mining-rate pixel-text-sm">
-            每秒產出: <span id="display-gps">0</span>
+        </div>
+        <div class="faction-card" onclick="selectFaction('europe')">
+          <div class="faction-banner" data-faction="europe">
+            <span class="faction-emblem icon-castle"></span>
           </div>
-          <div class="mining-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" id="progress-fill"></div>
-            </div>
+          <h3 class="faction-name" style="color:var(--europe);">歐洲陣營</h3>
+          <p class="faction-desc">大本營：倫敦 · 巴黎<br>埋藏極高的遠古氣運</p>
+          <div class="faction-stats">
+            <span class="pixel-icon icon-star"></span>
+            <span class="pixel-icon icon-star"></span>
+            <span class="pixel-icon icon-star"></span>
           </div>
-          <button class="pixel-btn claim-btn" onclick="claimGold()">
-            <span class="pixel-icon icon-hand"></span> 領取收益
+        </div>
+      </div>
+      <button class="pixel-btn btn-success" id="btn-enter-world" onclick="enterWorld()" style="margin:24px auto 0;display:block;">
+        <span class="pixel-icon icon-compass"></span> 踏入世界
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 3: MAIN GAME ===== -->
+  <div id="page-game" class="page">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <img src="assets/logo.svg" alt="EO" class="sidebar-logo-img">
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-btn active" data-page="map" onclick="switchGamePage('map')">
+          <span class="pixel-icon icon-globe"></span>
+          <span class="sidebar-label">世界地圖</span>
+        </button>
+        <button class="sidebar-btn" data-page="mine" onclick="switchGamePage('mine')">
+          <span class="pixel-icon icon-pickaxe"></span>
+          <span class="sidebar-label">礦場</span>
+        </button>
+        <button class="sidebar-btn" data-page="gacha" onclick="switchGamePage('gacha')">
+          <span class="pixel-icon icon-chest"></span>
+          <span class="sidebar-label">秘寶</span>
+        </button>
+        <button class="sidebar-btn" data-page="inventory" onclick="switchGamePage('inventory')">
+          <span class="pixel-icon icon-backpack"></span>
+          <span class="sidebar-label">倉庫</span>
+        </button>
+        <button class="sidebar-btn" data-page="stats" onclick="switchGamePage('stats')">
+          <span class="pixel-icon icon-chart"></span>
+          <span class="sidebar-label">統計</span>
+        </button>
+      </nav>
+      <div class="sidebar-user">
+        <div class="user-badge-sm" onclick="toggleUserMenu()">
+          <img id="game-avatar" class="user-avatar-sm" src="" alt="" style="display:none;">
+          <span class="user-name-sm" id="game-username"></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-area">
+      <!-- PAGE: World Map -->
+      <div class="game-page active" id="gpage-map">
+        <div class="map-toolbar">
+          <div class="map-gold-display">
+            <span class="pixel-icon icon-coin"></span>
+            <span class="gold-value" id="display-gold">0</span>
+          </div>
+          <div class="map-gps-display">
+            <span class="pixel-icon icon-clock"></span>
+            <span class="gps-value" id="display-gps">0</span>
+            <span class="gps-label">/秒</span>
+          </div>
+          <button class="pixel-btn btn-sm" onclick="claimGold()">
+            <span class="pixel-icon icon-hand"></span> 領取
           </button>
-          <div class="mine-levels">
-            <div class="mine-level pixel-text-sm" data-level="1">
-              <span class="pixel-icon icon-rock"></span> Lv.1 碎石地層
-            </div>
-            <div class="mine-level pixel-text-sm" data-level="2">
-              <span class="pixel-icon icon-layer"></span> Lv.2 沉積礦脈
-            </div>
-            <div class="mine-level pixel-text-sm" data-level="3">
-              <span class="pixel-icon icon-diamond"></span> Lv.3 閃耀鑽石
-            </div>
-            <div class="mine-level pixel-text-sm" data-level="4">
-              <span class="pixel-icon icon-crystal"></span> Lv.4 暗物質礦
-            </div>
-            <div class="mine-level pixel-text-sm" data-level="5">
-              <span class="pixel-icon icon-core"></span> Lv.5 地球星核
-            </div>
+        </div>
+        <div class="map-split">
+          <div class="map-area" id="map-container">
+            <div id="world-leaflet-map"></div>
           </div>
-          <button class="pixel-btn upgrade-btn" onclick="upgradeMine()" id="btn-upgrade">
-            <span class="pixel-icon icon-arrow-up"></span> 升級礦層
-          </button>
+          <aside class="map-sidebar">
+            <div class="country-panel" id="country-info">
+              <div class="cp-header" id="country-name">選擇一個國家</div>
+              <div class="cp-body">
+                <div class="cp-row"><span class="pixel-icon icon-users"></span><span>在線開採:</span><span id="country-online">0</span></div>
+                <div class="cp-row"><span class="pixel-icon icon-coin"></span><span>總產出/秒:</span><span id="country-gps">0</span></div>
+                <div class="cp-row"><span class="pixel-icon icon-flag"></span><span>所屬陣營:</span><span id="country-continent">-</span></div>
+              </div>
+              <div class="cp-rest" id="country-rest-info"></div>
+              <button class="pixel-btn btn-primary btn-full" onclick="deployMine()" id="btn-deploy" style="margin-top:12px;">
+                <span class="pixel-icon icon-pickaxe"></span> 在此建立礦場
+              </button>
+            </div>
+            <div class="mine-quick-panel">
+              <div class="qp-title">礦場進度</div>
+              <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+              <div class="mine-levels">
+                <div class="ml-item" data-level="1"><span class="pixel-icon icon-rock"></span> Lv.1 碎石地層</div>
+                <div class="ml-item" data-level="2"><span class="pixel-icon icon-layer"></span> Lv.2 沉積礦脈</div>
+                <div class="ml-item" data-level="3"><span class="pixel-icon icon-diamond"></span> Lv.3 閃耀鑽石</div>
+                <div class="ml-item" data-level="4"><span class="pixel-icon icon-crystal"></span> Lv.4 暗物質礦</div>
+                <div class="ml-item" data-level="5"><span class="pixel-icon icon-core"></span> Lv.5 地球星核</div>
+              </div>
+              <button class="pixel-btn btn-sm btn-full" onclick="upgradeMine()" id="btn-upgrade" style="margin-top:8px;">
+                <span class="pixel-icon icon-arrow-up"></span> 升級礦層
+              </button>
+            </div>
+          </aside>
         </div>
       </div>
 
-      <!-- MINE TAB -->
-      <div class="game-tab" id="tab-mine">
-        <div class="tab-content-center">
-          <div class="mine-detail-panel">
-            <h3 class="pixel-wordart-xs">礦場管理</h3>
+      <!-- PAGE: Mining -->
+      <div class="game-page" id="gpage-mine">
+        <div class="page-center">
+          <div class="mine-card">
+            <h2 class="section-title">礦場管理</h2>
             <div class="mine-visual">
               <canvas id="mine-canvas"></canvas>
             </div>
-            <div class="mine-stats">
-              <div class="stat-box">
+            <div class="mine-stat-row">
+              <div class="mine-stat">
                 <span class="pixel-icon icon-layer"></span>
-                <span class="pixel-text-sm">當前礦層:</span>
-                <span id="mine-current-level" class="pixel-text">Lv.1</span>
+                <span class="stat-label">當前礦層</span>
+                <span class="stat-val" id="mine-current-level">Lv.1</span>
               </div>
-              <div class="stat-box">
+              <div class="mine-stat">
                 <span class="pixel-icon icon-coin"></span>
-                <span class="pixel-text-sm">累計收益:</span>
-                <span id="mine-total-gold" class="pixel-text">0</span>
+                <span class="stat-label">累計收益</span>
+                <span class="stat-val" id="mine-total-gold">0</span>
               </div>
-              <div class="stat-box">
+              <div class="mine-stat">
                 <span class="pixel-icon icon-gem"></span>
-                <span class="pixel-text-sm">轉生次數:</span>
-                <span id="mine-rebirths" class="pixel-text">0</span>
+                <span class="stat-label">轉生次數</span>
+                <span class="stat-val" id="mine-rebirths">0</span>
               </div>
             </div>
-            <button class="pixel-btn rebirth-btn" onclick="doRebirth()">
+            <button class="pixel-btn btn-danger" onclick="doRebirth()">
               <span class="pixel-icon icon-recycle"></span> 礦場轉生
             </button>
           </div>
         </div>
       </div>
 
-      <!-- GACHA TAB -->
-      <div class="game-tab" id="tab-gacha">
-        <div class="tab-content-center">
-          <div class="gacha-panel">
-            <h3 class="pixel-wordart-xs">探尋地球秘寶</h3>
-            <div class="gacha-cost pixel-text-sm">
-              消耗: <span class="pixel-icon icon-coin"></span> 10,000,000,000
-            </div>
-            <div class="gacha-machine" id="gacha-machine">
-              <div class="gacha-box">
-                <canvas id="gacha-canvas"></canvas>
-              </div>
+      <!-- PAGE: Gacha -->
+      <div class="game-page" id="gpage-gacha">
+        <div class="page-center">
+          <div class="gacha-card">
+            <h2 class="section-title">探尋地球秘寶</h2>
+            <div class="gacha-cost">消耗 <span class="gold-highlight">10,000,000,000</span> <span class="pixel-icon icon-coin"></span></div>
+            <div class="gacha-machine">
+              <div class="gacha-box"><canvas id="gacha-canvas"></canvas></div>
               <div class="gacha-lights">
                 <span class="light"></span><span class="light"></span><span class="light"></span>
                 <span class="light"></span><span class="light"></span><span class="light"></span>
               </div>
             </div>
-            <div class="gacha-rarity-info pixel-text-sm">
-              <div><span class="rarity-dot common"></span> 普通 89.99% - 古老恐龍化石</div>
-              <div><span class="rarity-dot epic"></span> 史詩 9.9% - 永久開採速度+5%</div>
-              <div><span class="rarity-dot mythic"></span> 神話 0.1% - 國家限量，速度+20%</div>
-              <div><span class="rarity-dot unique"></span> 獨特 0.001% - 全服唯一至寶</div>
+            <div class="rarity-table">
+              <div class="rt-row"><span class="rt-dot common"></span><span>普通 89.99%</span><span>古老恐龍化石</span></div>
+              <div class="rt-row"><span class="rt-dot epic"></span><span>史詩 9.9%</span><span>永久開採速度+5%</span></div>
+              <div class="rt-row"><span class="rt-dot mythic"></span><span>神話 0.1%</span><span>國家限量，速度+20%</span></div>
+              <div class="rt-row"><span class="rt-dot unique"></span><span>獨特 0.001%</span><span>全服唯一至寶</span></div>
             </div>
-            <button class="pixel-btn gacha-btn" onclick="drawGacha()" id="btn-gacha">
+            <button class="pixel-btn btn-gold btn-full" onclick="drawGacha()" id="btn-gacha" style="margin-top:12px;">
               <span class="pixel-icon icon-chest"></span> 探尋秘寶
             </button>
             <div class="gacha-result" id="gacha-result"></div>
@@ -326,50 +311,52 @@
         </div>
       </div>
 
-      <!-- INVENTORY TAB -->
-      <div class="game-tab" id="tab-inventory">
-        <div class="tab-content-center">
-          <div class="inventory-panel">
-            <h3 class="pixel-wordart-xs">我的收藏</h3>
+      <!-- PAGE: Inventory -->
+      <div class="game-page" id="gpage-inventory">
+        <div class="page-center">
+          <div class="inventory-card">
+            <h2 class="section-title">我的收藏</h2>
             <div class="inventory-grid" id="inventory-grid"></div>
           </div>
         </div>
       </div>
 
-      <!-- STATS TAB -->
-      <div class="game-tab" id="tab-stats">
-        <div class="tab-content-center">
-          <div class="stats-panel">
-            <h3 class="pixel-wordart-xs">全球統計</h3>
-            <div class="stats-grid">
-              <div class="stat-card">
+      <!-- PAGE: Stats -->
+      <div class="game-page" id="gpage-stats">
+        <div class="page-center">
+          <div class="stats-card">
+            <h2 class="section-title">全球統計</h2>
+            <div class="stat-cards-row">
+              <div class="s-card">
                 <span class="pixel-icon icon-users"></span>
-                <span class="stat-label pixel-text-sm">總市民數</span>
-                <span class="stat-value pixel-text" id="stat-total-users">0</span>
+                <span class="s-label">總市民數</span>
+                <span class="s-value" id="stat-total-users">0</span>
               </div>
-              <div class="stat-card">
+              <div class="s-card">
                 <span class="pixel-icon icon-wifi"></span>
-                <span class="stat-label pixel-text-sm">在線人數</span>
-                <span class="stat-value pixel-text" id="stat-online-users">0</span>
+                <span class="s-label">在線人數</span>
+                <span class="s-value" id="stat-online-users">0</span>
               </div>
-              <div class="stat-card">
+              <div class="s-card">
                 <span class="pixel-icon icon-coin"></span>
-                <span class="stat-label pixel-text-sm">全球產出/秒</span>
-                <span class="stat-value pixel-text" id="stat-global-gps">0</span>
+                <span class="s-label">全球產出/秒</span>
+                <span class="s-value" id="stat-global-gps">0</span>
               </div>
             </div>
-            <div class="faction-aura-section">
-              <h4 class="pixel-wordart-xs">陣營氣運榜</h4>
-              <div id="faction-aura-list"></div>
-            </div>
-            <div class="leaderboard-section">
-              <h4 class="pixel-wordart-xs">富豪榜</h4>
-              <div id="leaderboard-list"></div>
+            <div class="stats-split">
+              <div class="stats-half">
+                <h3 class="section-title-sm">陣營氣運榜</h3>
+                <div id="faction-aura-list" class="list-box"></div>
+              </div>
+              <div class="stats-half">
+                <h3 class="section-title-sm">富豪榜</h3>
+                <div id="leaderboard-list" class="list-box"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <div id="unique-notification" class="unique-notif hidden">
       <div class="unique-notif-content">
@@ -383,6 +370,5 @@
 <script src="js/icons.js"></script>
 <script src="js/leaflet-map.js"></script>
 <script src="js/main.js"></script>
-<script>console.log('Earth Online client loaded');</script>
 </body>
 </html>

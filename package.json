@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "start": "node backend/src/server.js",
-    "dev": "node --watch backend/src/server.js"
+    "dev": "node --watch backend/src/server.js",
+    "build": "echo 'Static site - no build needed'",
+    "cloudflare-build": "echo 'Build complete'"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
