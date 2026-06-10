@@ -13,7 +13,6 @@ let gameState = {
   stats: null,
 };
 
-let pixelMap = null;
 let goldInterval = null;
 let animationFrame = null;
 let eventSource = null;
@@ -88,7 +87,13 @@ function setupSSE() {
         updateStatsUI();
       } else if (msg.type === 'online') {
         gameState.onlineCounts = msg.data;
-        if (pixelMap) pixelMap.updateData(msg.data, null);
+        const factionMap = {};
+        gameState.countries.forEach(c => {
+          if (c.dominant_faction) factionMap[c.code] = c.dominant_faction;
+        });
+        if (typeof updateMapData === 'function') {
+          updateMapData(msg.data, null, factionMap);
+        }
       }
     } catch (e) { }
   };
@@ -208,19 +213,19 @@ function initGame() {
   updateUserProfileDisplay();
   setupSSE();
 
-  const mapContainer = document.getElementById('map-container');
-  const canvas = document.getElementById('world-map-canvas');
-  pixelMap = new PixelMap(canvas, mapContainer);
-  pixelMap.onSelectCountry = onCountrySelect;
+  onCountrySelect = (country) => {
+    const c = gameState.countries.find(cc => cc.code === country.code);
+    if (!c) return;
+    gameState.currentCountry = country.code;
+    updateCountryInfoPanel(country, c);
+  };
 
+  initWorldMap('world-leaflet-map');
   loadCountries();
+
   loadInventory();
   loadStats();
   startGoldSimulation();
-
-  if (gameState.currentCountry) {
-    pixelMap.selectedCountry = COUNTRY_DATA.find(c => c.code === gameState.currentCountry);
-  }
 
   document.getElementById('btn-upgrade').textContent =
     `升級礦層 (${formatGold(Math.pow(10, gameState.mineLevel) * 100)})`;
@@ -234,23 +239,54 @@ function loadCountries() {
     .then(countries => {
       gameState.countries = countries;
       const gpsMap = {};
-      countries.forEach(c => gpsMap[c.code] = c.total_gold_per_sec);
-      if (pixelMap) {
-        pixelMap.updateData(gameState.onlineCounts, gpsMap);
+      const factionMap = {};
+      countries.forEach(c => {
+        gpsMap[c.code] = c.total_gold_per_sec || 0;
+        if (c.dominant_faction) factionMap[c.code] = c.dominant_faction;
+      });
+      if (typeof setGameCountries === 'function') setGameCountries(countries);
+      if (typeof updateMapData === 'function') {
+        updateMapData(gameState.onlineCounts, gpsMap, factionMap);
       }
     })
     .catch(() => {});
 }
 
-function onCountrySelect(country) {
-  const c = gameState.countries.find(cc => cc.code === country.code);
-  document.getElementById('country-name').textContent = country.name_cn;
-  document.getElementById('country-online').textContent = c ? (c.online_count || 0) : 0;
-  document.getElementById('country-gps').textContent = c ? formatGold(c.total_gold_per_sec || 0) : '0';
+function updateCountryInfoPanel(country, serverData) {
+  const code3 = typeof COUNTRY_CODE_MAP !== 'undefined' ? COUNTRY_CODE_MAP[country.code] : null;
+  const restData = typeof restCountriesData !== 'undefined' ? restCountriesData[code3] : null;
+
+  document.getElementById('country-name').innerHTML = `
+    ${restData ? `<img src="${restData.flag}" style="width:24px;height:16px;image-rendering:auto;vertical-align:middle;margin-right:6px;">` : ''}
+    ${restData ? restData.name : (country.name_cn || country.name)}
+  `;
+  document.getElementById('country-online').textContent = serverData ? (serverData.online_count || 0) : 0;
+  document.getElementById('country-gps').textContent = serverData ? formatGold(serverData.total_gold_per_sec || 0) : '0';
   document.getElementById('country-continent').textContent = getContinentName(country.continent);
 
-  gameState.currentCountry = country.code;
   document.getElementById('btn-deploy').style.display = 'block';
+
+  const restInfo = document.getElementById('country-rest-info');
+  if (restInfo && restData) {
+    restInfo.style.display = '';
+    restInfo.innerHTML = `
+      <div class="country-rest-divider"></div>
+      <div class="info-row"><span class="pixel-icon icon-building"></span> <span class="pixel-text-sm">首都:</span> <span>${restData.capital || '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-users"></span> <span class="pixel-text-sm">人口:</span> <span>${restData.population ? Number(restData.population).toLocaleString() : '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-coin"></span> <span class="pixel-text-sm">GDP (Gini):</span> <span>${restData.gdp ? '$' + Number(restData.gdp).toLocaleString() : '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-globe"></span> <span class="pixel-text-sm">地區:</span> <span>${restData.region || '-'}</span></div>
+    `;
+  } else if (restInfo) {
+    restInfo.style.display = 'none';
+  }
+}
+
+function onCountrySelect(country) {
+  const c = gameState.countries.find(cc => cc.code === country.code);
+  if (!c) return;
+  gameState.currentCountry = country.code;
+  updateCountryInfoPanel(country, c);
+  if (typeof flyToCountry === 'function') flyToCountry(country.code);
 }
 
 function getContinentName(cont) {
@@ -580,23 +616,12 @@ function switchTab(tab) {
   document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
 
-  if (tab === 'map' && pixelMap) {
-    setTimeout(() => pixelMap._resize(), 100);
+  if (tab === 'map' && worldMap) {
+    setTimeout(() => worldMap.invalidateSize(), 100);
   }
   if (tab === 'stats') loadStats();
   if (tab === 'inventory') loadInventory();
   if (tab === 'mine') initMineCanvasAnimation();
-}
-
-function zoomMap(dir) {
-  if (pixelMap) {
-    if (dir > 0) pixelMap.zoomIn();
-    else pixelMap.zoomOut();
-  }
-}
-
-function resetMap() {
-  if (pixelMap) pixelMap.resetView();
 }
 
 function initMineCanvas() {

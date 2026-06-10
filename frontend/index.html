@@ -7,6 +7,9 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/pixel-icons.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 </head>
 <body>
 
@@ -183,12 +186,7 @@
       <!-- MAP TAB -->
       <div class="game-tab active" id="tab-map">
         <div class="map-container" id="map-container">
-          <canvas id="world-map-canvas"></canvas>
-          <div class="map-controls">
-            <button class="pixel-btn-sm" onclick="zoomMap(1)"><span class="pixel-icon icon-plus"></span></button>
-            <button class="pixel-btn-sm" onclick="zoomMap(-1)"><span class="pixel-icon icon-minus"></span></button>
-            <button class="pixel-btn-sm" onclick="resetMap()"><span class="pixel-icon icon-home"></span></button>
-          </div>
+          <div id="world-leaflet-map" style="width:100%;height:100%;"></div>
         </div>
         <div class="country-info" id="country-info">
           <div class="country-info-header pixel-text" id="country-name">選擇一個國家</div>
@@ -197,6 +195,7 @@
             <div class="info-row"><span class="pixel-icon icon-coin"></span> <span class="pixel-text-sm">總產出/秒:</span> <span id="country-gps">0</span></div>
             <div class="info-row"><span class="pixel-icon icon-flag"></span> <span class="pixel-text-sm">所屬陣營:</span> <span id="country-continent">-</span></div>
           </div>
+          <div class="country-rest-info" id="country-rest-info" style="display:none;"></div>
           <button class="pixel-btn deploy-btn" onclick="deployMine()" id="btn-deploy">
             <span class="pixel-icon icon-pickaxe"></span> 在此建立礦場
           </button>
@@ -359,7 +358,7 @@
 </div>
 
 <script src="js/icons.js"></script>
-<script src="js/pixel-map.js"></script>
+<script src="js/leaflet-map.js"></script>
 <script src="js/main.js"></script>
 <script>console.log('Earth Online client loaded');</script>
 </body>

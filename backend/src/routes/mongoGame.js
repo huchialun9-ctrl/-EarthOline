@@ -13,12 +13,20 @@ router.get('/game/countries', async (req, res) => {
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
     const onlineUsers = await User.find({ currentCountry: { $ne: null }, lastActive: { $gte: fiveMinAgo } }).lean();
     const onlineMap = {};
-    onlineUsers.forEach(u => { onlineMap[u.currentCountry] = (onlineMap[u.currentCountry] || 0) + 1; });
+    const factionCount = {};
+    onlineUsers.forEach(u => {
+      onlineMap[u.currentCountry] = (onlineMap[u.currentCountry] || 0) + 1;
+      if (!factionCount[u.currentCountry]) factionCount[u.currentCountry] = {};
+      const f = u.faction || 'none';
+      factionCount[u.currentCountry][f] = (factionCount[u.currentCountry][f] || 0) + 1;
+    });
 
     const result = countries.map(c => {
       const countryUsers = onlineUsers.filter(u => u.currentCountry === c.code);
       const totalGps = countryUsers.reduce((sum, u) => sum + (u.goldPerSec || 0), 0);
-      return { ...c, online_count: onlineMap[c.code] || 0, total_gold_per_sec: totalGps };
+      const factions = factionCount[c.code] || {};
+      const dominantFaction = Object.keys(factions).sort((a, b) => factions[b] - factions[a])[0] || null;
+      return { ...c, online_count: onlineMap[c.code] || 0, total_gold_per_sec: totalGps, dominant_faction: dominantFaction };
     });
     res.json(result);
   } catch (e) {
