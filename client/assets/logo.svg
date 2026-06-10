@@ -1,109 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P');
-    </style>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a12"/>
+      <stop offset="100%" stop-color="#111122"/>
+    </linearGradient>
+    <linearGradient id="globeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a6bff"/>
+      <stop offset="100%" stop-color="#0a3d99"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00d4aa"/>
+      <stop offset="100%" stop-color="#00b894"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#ff8c00"/>
+    </linearGradient>
   </defs>
-  <!-- Background -->
-  <rect width="512" height="512" fill="#1a1a2e"/>
-  <rect x="0" y="0" width="512" height="512" fill="url(#bgGrid)"/>
-  <pattern id="bgGrid" width="16" height="16" patternUnits="userSpaceOnUse">
-    <rect width="16" height="16" fill="none"/>
-    <rect x="0" y="0" width="1" height="1" fill="rgba(255,255,255,0.03)"/>
-  </pattern>
-
-  <!-- Pickaxe Cross - Left -->
-  <g transform="translate(80, 180)">
-    <!-- Handle -->
-    <rect x="20" y="40" width="8" height="80" fill="#8B5E3C" rx="2"/>
-    <rect x="22" y="40" width="4" height="80" fill="#A0704C"/>
-    <!-- Head -->
-    <rect x="8" y="20" width="32" height="12" fill="#7A8B99" rx="2"/>
-    <rect x="12" y="32" width="24" height="8" fill="#9AABB9"/>
-    <rect x="16" y="40" width="16" height="6" fill="#7A8B99"/>
-    <!-- Highlight -->
-    <rect x="10" y="22" width="8" height="4" fill="#BCCDD9"/>
+  <rect width="512" height="512" fill="url(#bgGrad)"/>
+  <circle cx="256" cy="220" r="100" fill="url(#globeGrad)" opacity="0.15"/>
+  <circle cx="256" cy="220" r="100" fill="none" stroke="url(#accentGrad)" stroke-width="2" opacity="0.5"/>
+  <circle cx="256" cy="220" r="90" fill="none" stroke="rgba(0,212,170,0.15)" stroke-width="1"/>
+  <g transform="translate(256, 220)">
+    <path d="M-70,-30 C-50,-50 20,-60 60,-40 C80,-30 85,-10 70,10 C50,40 -10,55 -50,40 C-75,30 -80,0 -70,-30Z" fill="url(#accentGrad)" opacity="0.25"/>
+    <path d="M-20,-55 C0,-50 15,-35 10,-15 C5,5 -10,10 -25,5 C-40,0 -45,-25 -35,-45Z" fill="url(#accentGrad)" opacity="0.15"/>
+    <path d="M30,10 C45,-5 65,-5 70,10 C75,30 60,45 40,45 C20,45 15,25 30,10Z" fill="url(#accentGrad)" opacity="0.2"/>
+    <ellipse cx="0" cy="0" rx="80" ry="20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <ellipse cx="0" cy="0" rx="20" ry="80" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
   </g>
-
-  <!-- Pickaxe Cross - Right -->
-  <g transform="translate(400, 180) scale(-1, 1)">
-    <rect x="20" y="40" width="8" height="80" fill="#8B5E3C" rx="2"/>
-    <rect x="22" y="40" width="4" height="80" fill="#A0704C"/>
-    <rect x="8" y="20" width="32" height="12" fill="#7A8B99" rx="2"/>
-    <rect x="12" y="32" width="24" height="8" fill="#9AABB9"/>
-    <rect x="16" y="40" width="16" height="6" fill="#7A8B99"/>
-    <rect x="10" y="22" width="8" height="4" fill="#BCCDD9"/>
+  <g transform="translate(256, 220)">
+    <line x1="-60" y1="-50" x2="60" y2="50" stroke="url(#accentGrad)" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <line x1="60" y1="-50" x2="-60" y2="50" stroke="url(#accentGrad)" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+    <circle cx="0" cy="0" r="8" fill="url(#goldGrad)"/>
+    <circle cx="0" cy="0" r="4" fill="#fff" opacity="0.5"/>
   </g>
-
-  <!-- Globe / Earth -->
-  <circle cx="256" cy="240" r="60" fill="#2E7ABF"/>
-  <circle cx="256" cy="240" r="60" fill="none" stroke="#44CC44" stroke-width="3"/>
-  <!-- Continents pixel blobs -->
-  <rect x="220" y="220" width="40" height="20" rx="4" fill="#44CC44"/>
-  <rect x="240" y="210" width="30" height="15" rx="3" fill="#44CC44"/>
-  <rect x="230" y="240" width="20" height="25" rx="3" fill="#55DD55"/>
-  <rect x="260" y="235" width="20" height="15" rx="3" fill="#44CC44"/>
-  <rect x="270" y="245" width="15" height="20" rx="3" fill="#55DD55"/>
-  <!-- Grid lines on globe -->
-  <ellipse cx="256" cy="240" rx="60" ry="20" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-  <ellipse cx="256" cy="240" rx="20" ry="60" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-  <line x1="196" y1="240" x2="316" y2="240" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-
-  <!-- Mining pickaxe sparks around globe -->
-  <rect x="175" y="195" width="6" height="6" fill="#FFCC00" opacity="0.8"/>
-  <rect x="330" y="260" width="5" height="5" fill="#FFCC00" opacity="0.6"/>
-  <rect x="200" y="290" width="4" height="4" fill="#FFCC00" opacity="0.7"/>
-  <rect x="310" y="185" width="4" height="4" fill="#FFCC00" opacity="0.5"/>
-
-  <!-- Gold coin decorations -->
-  <circle cx="130" cy="350" r="12" fill="#FFCC00" stroke="#CC8800" stroke-width="2"/>
-  <text x="130" y="355" text-anchor="middle" font-family="monospace" font-size="14" font-weight="bold" fill="#CC8800">$</text>
-  <circle cx="382" cy="350" r="12" fill="#FFCC00" stroke="#CC8800" stroke-width="2"/>
-  <text x="382" y="355" text-anchor="middle" font-family="monospace" font-size="14" font-weight="bold" fill="#CC8800">$</text>
-
-  <!-- Diamond decorations -->
-  <polygon points="140,180 150,165 160,180 150,195" fill="#66CCFF" stroke="#44AAEE" stroke-width="1"/>
-  <polygon points="352,180 362,165 372,180 362,195" fill="#66CCFF" stroke="#44AAEE" stroke-width="1"/>
-
-  <!-- Title: EARTH ONLINE - 3D Pixel WordArt -->
   <g transform="translate(256, 370)">
-    <!-- Shadow layers -->
-    <text x="0" y="0" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="32" font-weight="bold"
-      fill="#332200" text-shadow="none">EARTH ONLINE</text>
-    <text x="0" y="0" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="32" font-weight="bold"
-      fill="#664400" transform="translate(0, -2)">EARTH ONLINE</text>
-    <text x="0" y="0" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="32" font-weight="bold"
-      fill="#996600" transform="translate(0, -4)">EARTH ONLINE</text>
-    <text x="0" y="0" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="32" font-weight="bold"
-      fill="#CC8800" transform="translate(0, -6)">EARTH ONLINE</text>
-    <!-- Main text -->
-    <text x="0" y="0" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="32" font-weight="bold"
-      fill="#FFCC00" transform="translate(0, -8)">EARTH ONLINE</text>
-    <!-- Highlight -->
-    <text x="0" y="0" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="32" font-weight="bold"
-      fill="#FFEE88" transform="translate(-2, -10)">EARTH ONLINE</text>
+    <text x="0" y="0" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="38" font-weight="800" fill="url(#accentGrad)" letter-spacing="6">EARTH ONLINE</text>
+    <text x="0" y="28" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="14" font-weight="500" fill="#666688" letter-spacing="8">地球在線</text>
+    <rect x="156" y="42" width="200" height="2" rx="1" fill="url(#accentGrad)" opacity="0.3"/>
+    <text x="0" y="62" text-anchor="middle" font-family="'Inter','Segoe UI',sans-serif" font-size="9" font-weight="500" fill="#444466" letter-spacing="4">GLOBAL MINING IDLE RPG</text>
   </g>
-
-  <!-- Subtitle: 地球在線 -->
-  <text x="256" y="410" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="14"
-    fill="#44CC44" transform="translate(0, 0)">
-    地球在線
-  </text>
-  <text x="256" y="410" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="14"
-    fill="#66EE66" transform="translate(-1, -1)">
-    地球在線
-  </text>
-
-  <!-- Gradient line divider -->
-  <rect x="80" y="430" width="352" height="3" fill="#44CC44" rx="1" opacity="0.6"/>
-
-  <!-- Tagline -->
-  <text x="256" y="460" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="9"
-    fill="#888899">GLOBAL MINING IDLE RPG</text>
-
-  <!-- Pixel decoration border corners -->
-  <rect x="10" y="10" width="20" height="20" fill="#44CC44" opacity="0.4"/>
-  <rect x="482" y="10" width="20" height="20" fill="#44CC44" opacity="0.4"/>
-  <rect x="10" y="482" width="20" height="20" fill="#44CC44" opacity="0.4"/>
-  <rect x="482" y="482" width="20" height="20" fill="#44CC44" opacity="0.4"/>
+  <g transform="translate(256, 220)" opacity="0.15">
+    <circle cx="-35" cy="-30" r="2" fill="#fff"/>
+    <circle cx="40" cy="-35" r="1.5" fill="#fff"/>
+    <circle cx="-45" cy="25" r="1.5" fill="#fff"/>
+    <circle cx="50" cy="30" r="2" fill="#fff"/>
+    <circle cx="-20" cy="-50" r="1" fill="#fff"/>
+    <circle cx="30" cy="-55" r="1" fill="#fff"/>
+  </g>
 </svg>

@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/pixel-icons.css">
   <link rel="stylesheet" href="css/style.css">
@@ -19,14 +19,13 @@
 <div id="app">
   <!-- ===== PAGE 1: LOGIN ===== -->
   <div id="page-login" class="page active">
-    <div class="login-bg-grid"></div>
     <div class="login-wrapper">
       <div class="login-brand">
         <div class="login-logo">
-          <img src="assets/logo.svg" alt="Earth Online" class="pixel-logo">
+          <img src="assets/logo.svg" alt="Earth Online" class="logo-img">
         </div>
-        <div class="pixel-wordart logo-title">EARTH ONLINE</div>
-        <div class="pixel-wordart-sub">地球在線</div>
+        <div class="login-brand-title">EARTH ONLINE</div>
+        <div class="login-brand-sub">地球在線</div>
       </div>
       <div class="login-card">
         <div class="login-card-header">
@@ -37,25 +36,25 @@
         </div>
         <div class="login-card-body">
           <div id="login-tab-login" class="login-tab-panel active">
-            <input type="email" id="login-email" class="pixel-input" placeholder="電子信箱" autocomplete="email">
-            <input type="password" id="login-password" class="pixel-input" placeholder="密碼" autocomplete="current-password">
-            <button class="pixel-btn btn-primary btn-full" onclick="doLogin()">
+            <input type="email" id="login-email" class="input" placeholder="電子信箱" autocomplete="email">
+            <input type="password" id="login-password" class="input" placeholder="密碼" autocomplete="current-password">
+            <button class="btn btn-primary btn-full" onclick="doLogin()">
               <span class="pixel-icon icon-enter"></span> 登入
             </button>
             <div id="login-error" class="form-msg"></div>
           </div>
           <div id="login-tab-register" class="login-tab-panel">
-            <input type="email" id="reg-email" class="pixel-input" placeholder="電子信箱" autocomplete="email">
-            <input type="text" id="reg-username" class="pixel-input" placeholder="用戶名稱 (可選)" autocomplete="username">
-            <input type="password" id="reg-password" class="pixel-input" placeholder="密碼 (至少6位)" autocomplete="new-password">
-            <input type="password" id="reg-confirm" class="pixel-input" placeholder="確認密碼" autocomplete="new-password">
-            <button class="pixel-btn btn-primary btn-full" onclick="doRegister()">
+            <input type="email" id="reg-email" class="input" placeholder="電子信箱" autocomplete="email">
+            <input type="text" id="reg-username" class="input" placeholder="用戶名稱 (可選)" autocomplete="username">
+            <input type="password" id="reg-password" class="input" placeholder="密碼 (至少6位)" autocomplete="new-password">
+            <input type="password" id="reg-confirm" class="input" placeholder="確認密碼" autocomplete="new-password">
+            <button class="btn btn-primary btn-full" onclick="doRegister()">
               <span class="pixel-icon icon-enter"></span> 註冊
             </button>
             <div id="reg-error" class="form-msg"></div>
           </div>
           <div class="login-divider"><span>或</span></div>
-          <button class="pixel-btn btn-discord btn-full" onclick="loginWithDiscord()">
+          <button class="btn btn-discord btn-full" onclick="loginWithDiscord()">
             <span class="pixel-icon icon-discord"></span> Discord 快速登入
           </button>
         </div>
@@ -63,14 +62,14 @@
           <div class="citizen-agreement">
             <label class="agree-checkbox">
               <input type="checkbox" id="agree-check" onchange="toggleAgree()">
-              <span class="check-pixel"></span>
+              <span class="check-custom"></span>
               <span>我已閱讀並同意《市民公約條約》</span>
             </label>
             <div class="agree-text">
               本人宣誓遵守地球在線開採秩序，不以任何形式使用外掛程式、不竄改客戶端數據、不惡意利用遊戲漏洞。違反者將面臨永久封禁及全服公告。
             </div>
           </div>
-          <button id="btn-enter" class="pixel-btn btn-success btn-full disabled" disabled onclick="enterGame()">
+          <button id="btn-enter" class="btn btn-success btn-full disabled" disabled onclick="enterGame()">
             <span class="pixel-icon icon-compass"></span> 踏入世界
           </button>
         </div>
@@ -103,7 +102,7 @@
             </div>
           </div>
           <div class="menu-divider"></div>
-          <button class="pixel-btn btn-sm btn-full" onclick="logout()">
+          <button class="btn btn-sm btn-full" onclick="logout()">
             <span class="pixel-icon icon-logout"></span> 登出
           </button>
         </div>
@@ -121,7 +120,7 @@
       <div class="faction-row">
         <div class="faction-card" onclick="selectFaction('asia')">
           <div class="faction-banner" data-faction="asia">
-            <span class="faction-emblem icon-temple"></span>
+            <span class="faction-emblem pixel-icon icon-temple icon-lg"></span>
           </div>
           <h3 class="faction-name" style="color:var(--asia);">亞洲陣營</h3>
           <p class="faction-desc">大本營：台北 · 東京<br>盛產地心深層礦脈</p>
@@ -133,7 +132,7 @@
         </div>
         <div class="faction-card" onclick="selectFaction('americas')">
           <div class="faction-banner" data-faction="americas">
-            <span class="faction-emblem icon-building"></span>
+            <span class="faction-emblem pixel-icon icon-building icon-lg"></span>
           </div>
           <h3 class="faction-name" style="color:var(--americas);">美洲陣營</h3>
           <p class="faction-desc">大本營：紐約<br>金融與商業帝國</p>
@@ -145,7 +144,7 @@
         </div>
         <div class="faction-card" onclick="selectFaction('europe')">
           <div class="faction-banner" data-faction="europe">
-            <span class="faction-emblem icon-castle"></span>
+            <span class="faction-emblem pixel-icon icon-castle icon-lg"></span>
           </div>
           <h3 class="faction-name" style="color:var(--europe);">歐洲陣營</h3>
           <p class="faction-desc">大本營：倫敦 · 巴黎<br>埋藏極高的遠古氣運</p>
@@ -156,7 +155,7 @@
           </div>
         </div>
       </div>
-      <button class="pixel-btn btn-success" id="btn-enter-world" onclick="enterWorld()" style="margin:24px auto 0;display:block;">
+      <button class="btn btn-success" id="btn-enter-world" onclick="enterWorld()" style="margin:28px auto 0;display:block;">
         <span class="pixel-icon icon-compass"></span> 踏入世界
       </button>
     </div>
@@ -168,6 +167,7 @@
     <aside class="sidebar">
       <div class="sidebar-logo">
         <img src="assets/logo.svg" alt="EO" class="sidebar-logo-img">
+        <span class="sidebar-logo-text">地球在線</span>
       </div>
       <nav class="sidebar-nav">
         <button class="sidebar-btn active" data-page="map" onclick="switchGamePage('map')">
@@ -199,11 +199,10 @@
           <span class="sidebar-label">公會</span>
         </button>
       </nav>
-      <div class="sidebar-user">
-        <div class="user-badge-sm" onclick="toggleUserMenu()">
-          <img id="game-avatar" class="user-avatar-sm" src="" alt="" style="display:none;">
-          <span class="user-name-sm" id="game-username"></span>
-        </div>
+      <div class="sidebar-user" onclick="toggleUserMenu()">
+        <img id="game-avatar" class="user-avatar-sm" src="" alt="" style="display:none;">
+        <span class="user-name-sm" id="game-username"></span>
+        <span class="pixel-icon icon-user icon-sm" style="opacity:0.5"></span>
       </div>
     </aside>
 
@@ -219,9 +218,9 @@
           <div class="map-gps-display">
             <span class="pixel-icon icon-clock"></span>
             <span class="gps-value" id="display-gps">0</span>
-            <span class="gps-label">/秒</span>
+            <span class="gps-label">每秒</span>
           </div>
-          <button class="pixel-btn btn-sm" onclick="claimGold()">
+          <button class="btn btn-sm" onclick="claimGold()">
             <span class="pixel-icon icon-hand"></span> 領取
           </button>
         </div>
@@ -238,7 +237,7 @@
                 <div class="cp-row"><span class="pixel-icon icon-flag"></span><span>所屬陣營:</span><span id="country-continent">-</span></div>
               </div>
               <div class="cp-rest" id="country-rest-info"></div>
-              <button class="pixel-btn btn-primary btn-full" onclick="deployMine()" id="btn-deploy" style="margin-top:12px;">
+              <button class="btn btn-primary btn-full" onclick="deployMine()" id="btn-deploy" style="margin-top:14px;">
                 <span class="pixel-icon icon-pickaxe"></span> 在此建立礦場
               </button>
             </div>
@@ -252,7 +251,7 @@
                 <div class="ml-item" data-level="4"><span class="pixel-icon icon-crystal"></span> Lv.4 暗物質礦</div>
                 <div class="ml-item" data-level="5"><span class="pixel-icon icon-core"></span> Lv.5 地球星核</div>
               </div>
-              <button class="pixel-btn btn-sm btn-full" onclick="upgradeMine()" id="btn-upgrade" style="margin-top:8px;">
+              <button class="btn btn-sm btn-full" onclick="upgradeMine()" id="btn-upgrade" style="margin-top:10px;">
                 <span class="pixel-icon icon-arrow-up"></span> 升級礦層
               </button>
             </div>
@@ -285,7 +284,7 @@
                 <span class="stat-val" id="mine-rebirths">0</span>
               </div>
             </div>
-            <button class="pixel-btn btn-danger" onclick="doRebirth()">
+            <button class="btn btn-danger" onclick="doRebirth()">
               <span class="pixel-icon icon-recycle"></span> 礦場轉生
             </button>
           </div>
@@ -311,7 +310,7 @@
               <div class="rt-row"><span class="rt-dot mythic"></span><span>神話 0.1%</span><span>國家限量，速度+20%</span></div>
               <div class="rt-row"><span class="rt-dot unique"></span><span>獨特 0.001%</span><span>全服唯一至寶</span></div>
             </div>
-            <button class="pixel-btn btn-gold btn-full" onclick="drawGacha()" id="btn-gacha" style="margin-top:12px;">
+            <button class="btn btn-gold btn-full" onclick="drawGacha()" id="btn-gacha" style="margin-top:14px;">
               <span class="pixel-icon icon-chest"></span> 探尋秘寶
             </button>
             <div class="gacha-result" id="gacha-result"></div>
@@ -336,17 +335,17 @@
             <h2 class="section-title">全球統計</h2>
             <div class="stat-cards-row">
               <div class="s-card">
-                <span class="pixel-icon icon-users"></span>
+                <span class="pixel-icon icon-users icon-lg"></span>
                 <span class="s-label">總市民數</span>
                 <span class="s-value" id="stat-total-users">0</span>
               </div>
               <div class="s-card">
-                <span class="pixel-icon icon-wifi"></span>
+                <span class="pixel-icon icon-wifi icon-lg"></span>
                 <span class="s-label">在線人數</span>
                 <span class="s-value" id="stat-online-users">0</span>
               </div>
               <div class="s-card">
-                <span class="pixel-icon icon-coin"></span>
+                <span class="pixel-icon icon-coin icon-lg"></span>
                 <span class="s-label">全球產出/秒</span>
                 <span class="s-value" id="stat-global-gps">0</span>
               </div>
@@ -367,7 +366,7 @@
 
       <!-- PAGE: Goals (Daily Quests + Achievements) -->
       <div class="game-page" id="gpage-goals">
-        <div class="page-center" style="justify-content:flex-start;padding-top:24px;">
+        <div class="page-center" style="justify-content:flex-start;padding-top:28px;">
           <div class="goals-card">
             <div class="goals-tabs">
               <button class="goal-tab active" data-goaltab="daily" onclick="switchGoalTab('daily')">每日任務</button>
@@ -376,7 +375,7 @@
             <div id="goals-daily" class="goal-tab-content active">
               <div class="quest-streak" id="quest-streak"></div>
               <div id="quest-list" class="quest-list"></div>
-              <button class="pixel-btn btn-primary btn-full" onclick="claimAllQuests()" id="btn-claim-all" style="margin-top:12px;">一鍵領取</button>
+              <button class="btn btn-primary btn-full" onclick="claimAllQuests()" id="btn-claim-all" style="margin-top:14px;">一鍵領取</button>
             </div>
             <div id="goals-achievements" class="goal-tab-content">
               <div id="achievement-list" class="achievement-list"></div>
@@ -387,7 +386,7 @@
 
       <!-- PAGE: Clan -->
       <div class="game-page" id="gpage-clan">
-        <div class="page-center" style="justify-content:flex-start;padding-top:24px;">
+        <div class="page-center" style="justify-content:flex-start;padding-top:28px;">
           <div id="clan-view" class="clan-card"></div>
         </div>
       </div>

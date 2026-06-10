@@ -121,7 +121,7 @@ function onEachFeature(feature, layer) {
   if (name && code2) {
     layer.bindTooltip(name, {
       sticky: true,
-      className: 'leaflet-pixel-tooltip',
+
       direction: 'top',
     });
   }
@@ -151,10 +151,10 @@ function updateCountryPanel(country, restData) {
   const restInfo = document.getElementById('country-rest-info');
   if (restInfo && restData) {
     restInfo.innerHTML = `
-      <div class="info-row"><span class="pixel-icon icon-building"></span> <span class="pixel-text-sm">首都:</span> <span>${restData.capital || '-'}</span></div>
-      <div class="info-row"><span class="pixel-icon icon-users"></span> <span class="pixel-text-sm">人口:</span> <span>${restData.population ? Number(restData.population).toLocaleString() : '-'}</span></div>
-      <div class="info-row"><span class="pixel-icon icon-coin"></span> <span class="pixel-text-sm">GDP:</span> <span>${restData.gdp ? '$' + Number(restData.gdp).toLocaleString() : '-'}</span></div>
-      <div class="info-row"><span class="pixel-icon icon-globe"></span> <span class="pixel-text-sm">地區:</span> <span>${restData.region || '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-building"></span> <span style="color:var(--text-dim);font-size:11px;">首都:</span> <span>${restData.capital || '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-users"></span> <span style="color:var(--text-dim);font-size:11px;">人口:</span> <span>${restData.population ? Number(restData.population).toLocaleString() : '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-coin"></span> <span style="color:var(--text-dim);font-size:11px;">GDP:</span> <span>${restData.gdp ? '$' + Number(restData.gdp).toLocaleString() : '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-globe"></span> <span style="color:var(--text-dim);font-size:11px;">地區:</span> <span>${restData.region || '-'}</span></div>
     `;
     restInfo.style.display = '';
   } else if (restInfo) {

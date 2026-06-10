@@ -356,10 +356,10 @@ function updateCountryInfoPanel(country, serverData) {
     restInfo.style.display = '';
     restInfo.innerHTML = `
       <div class="country-rest-divider"></div>
-      <div class="info-row"><span class="pixel-icon icon-building"></span> <span class="pixel-text-sm">首都:</span> <span>${restData.capital || '-'}</span></div>
-      <div class="info-row"><span class="pixel-icon icon-users"></span> <span class="pixel-text-sm">人口:</span> <span>${restData.population ? Number(restData.population).toLocaleString() : '-'}</span></div>
-      <div class="info-row"><span class="pixel-icon icon-coin"></span> <span class="pixel-text-sm">GDP (Gini):</span> <span>${restData.gdp ? '$' + Number(restData.gdp).toLocaleString() : '-'}</span></div>
-      <div class="info-row"><span class="pixel-icon icon-globe"></span> <span class="pixel-text-sm">地區:</span> <span>${restData.region || '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-building"></span> <span style="color:var(--text-dim);font-size:11px;">首都:</span> <span>${restData.capital || '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-users"></span> <span style="color:var(--text-dim);font-size:11px;">人口:</span> <span>${restData.population ? Number(restData.population).toLocaleString() : '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-coin"></span> <span style="color:var(--text-dim);font-size:11px;">GDP (Gini):</span> <span>${restData.gdp ? '$' + Number(restData.gdp).toLocaleString() : '-'}</span></div>
+      <div class="info-row"><span class="pixel-icon icon-globe"></span> <span style="color:var(--text-dim);font-size:11px;">地區:</span> <span>${restData.region || '-'}</span></div>
     `;
   } else if (restInfo) {
     restInfo.style.display = 'none';
@@ -567,8 +567,8 @@ function performGachaDraw() {
         const rarityClass = `rarity-${data.artifact.rarity}`;
         resultDiv.className = `gacha-result ${rarityClass}`;
         resultDiv.innerHTML = `
-          <div class="pixel-text">獲得：${data.artifact.name_cn || data.artifact.name}</div>
-          <div class="pixel-text-sm">${data.artifact.description || ''}</div>
+          <div style="font-weight:700;font-size:16px;margin-bottom:4px;">獲得：${data.artifact.name_cn || data.artifact.name}</div>
+          <div style="color:var(--text-dim);font-size:12px;">${data.artifact.description || ''}</div>
         `;
 
         if (data.isUnique) {
@@ -580,7 +580,7 @@ function performGachaDraw() {
       } else {
         const resultDiv = document.getElementById('gacha-result');
         resultDiv.className = 'gacha-result';
-        resultDiv.innerHTML = `<div class="pixel-text-sm" style="color:#ff4444;">${data.error || '抽取失敗'}</div>`;
+        resultDiv.innerHTML = `<div style="color:#ff4444;font-size:12px;">${data.error || '抽取失敗'}</div>`;
       }
     })
     .catch(e => {
@@ -604,7 +604,7 @@ function renderInventory() {
   if (!grid) return;
 
   if (gameState.inventory.length === 0) {
-    grid.innerHTML = '<div class="pixel-text-sm">倉庫空空如也...</div>';
+    grid.innerHTML = '<div style="color:var(--text-dim);font-size:12px;text-align:center;padding:24px;">倉庫空空如也...</div>';
     return;
   }
 
@@ -624,7 +624,7 @@ function renderInventory() {
         </div>
         <div class="item-name">${item.name_cn || item.name}</div>
         <div class="item-desc">${item.description || ''}</div>
-        ${item.rarity === 'common' ? `<button class="pixel-btn-sm" onclick="salvageItem(${item.id})" style="margin-top:4px;">熔煉</button>` : ''}
+        ${item.rarity === 'common' ? `<button class="btn btn-sm" onclick="salvageItem(${item.id})" style="margin-top:4px;">熔煉</button>` : ''}
       </div>
     `;
   }).join('');
@@ -949,8 +949,8 @@ function renderClanDetail(clan) {
         <span class="clan-member-role">${roleLabels[m.role] || m.role}</span>
         <span class="clan-member-name">${u.username || '未知'}</span>
         <span class="clan-member-info">Lv.${u.mineLevel || 1} · ${formatGold(u.gold || 0)}</span>
-        ${(isLeader && m.role !== 'leader') ? `<button class="pixel-btn btn-sm" onclick="kickClanMember('${uid}')" style="margin-left:auto;">踢出</button>` : ''}
-        ${(isLeader && m.role !== 'leader') ? `<button class="pixel-btn btn-sm" onclick="transferClanLeader('${uid}')">轉讓</button>` : ''}
+        ${(isLeader && m.role !== 'leader') ? `<button class="btn btn-sm" onclick="kickClanMember('${uid}')" style="margin-left:auto;">踢出</button>` : ''}
+        ${(isLeader && m.role !== 'leader') ? `<button class="btn btn-sm" onclick="transferClanLeader('${uid}')">轉讓</button>` : ''}
       </div>
     `;
   });
@@ -963,8 +963,8 @@ function renderClanDetail(clan) {
       html += `<div class="clan-request">
         <span>${r.userId?.username || '未知'}</span>
         <div class="clan-request-actions">
-          <button class="pixel-btn btn-sm btn-primary" onclick="handleClanRequest('${clan._id}', '${ruid}', true)">同意</button>
-          <button class="pixel-btn btn-sm btn-danger" onclick="handleClanRequest('${clan._id}', '${ruid}', false)">拒絕</button>
+          <button class="btn btn-sm btn-primary" onclick="handleClanRequest('${clan._id}', '${ruid}', true)">同意</button>
+          <button class="btn btn-sm btn-danger" onclick="handleClanRequest('${clan._id}', '${ruid}', false)">拒絕</button>
         </div>
       </div>`;
     });
@@ -972,13 +972,13 @@ function renderClanDetail(clan) {
   }
 
   if (!isLeader) {
-    html += `<button class="pixel-btn btn-danger btn-full" onclick="leaveClan()" style="margin-top:16px;">退出公會</button>`;
+    html += `<button class="btn btn-danger btn-full" onclick="leaveClan()" style="margin-top:16px;">退出公會</button>`;
   }
   if (isLeader) {
     html += `<div style="margin-top:16px;padding:12px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
       <div class="clan-members-title">公會設定</div>
-      <input type="text" id="clan-desc-input" class="pixel-input" placeholder="公會描述" value="${clan.description || ''}">
-      <button class="pixel-btn btn-primary btn-full" onclick="updateClanDesc()" style="margin-top:8px;">更新描述</button>
+      <input type="text" id="clan-desc-input" class="input" placeholder="公會描述" value="${clan.description || ''}">
+      <button class="btn btn-primary btn-full" onclick="updateClanDesc()" style="margin-top:8px;">更新描述</button>
     </div>`;
   }
 
@@ -1014,7 +1014,7 @@ function showClanList() {
                 <div class="clan-list-name">${c.name}</div>
                 <div class="clan-list-meta">Lv.${c.level} · ${c.memberCount} 人</div>
               </div>
-              <button class="pixel-btn btn-sm btn-primary" onclick="event.stopPropagation();joinClan('${c._id}')">加入</button>
+              <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();joinClan('${c._id}')">加入</button>
             </div>
           `;
         });
@@ -1025,10 +1025,10 @@ function showClanList() {
         <div style="margin-top:16px;padding:16px;background:rgba(0,0,0,0.15);border:1px solid var(--border);">
           <div class="clan-members-title" style="margin-bottom:8px;">創建公會</div>
           <div class="clan-input-group">
-            <input type="text" id="clan-name-input" class="pixel-input" placeholder="公會名稱">
-            <input type="text" id="clan-tag-input" class="pixel-input" placeholder="標籤 (2-4字)" style="max-width:120px;">
+            <input type="text" id="clan-name-input" class="input" placeholder="公會名稱">
+            <input type="text" id="clan-tag-input" class="input" placeholder="標籤 (2-4字)" style="max-width:120px;">
           </div>
-          <button class="pixel-btn btn-primary btn-full" onclick="createClan()">創建公會</button>
+          <button class="btn btn-primary btn-full" onclick="createClan()">創建公會</button>
         </div>
       `;
 
