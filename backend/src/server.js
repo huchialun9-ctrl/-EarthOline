@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../.env') });
+try { require('dotenv').config({ path: require('path').join(__dirname, '../../.env') }); } catch (e) { /* dotenv optional */ }
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
